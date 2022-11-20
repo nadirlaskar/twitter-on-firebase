@@ -1,4 +1,4 @@
 {
-  "extends": ["next/babel","next/core-web-vitals"]
+  "extends": ["plugin:@next/next/recommended", "nex/babel", "next/core-web-vitals"]
 
 }

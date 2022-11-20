@@ -1,8 +1,14 @@
+import classNames from 'classnames';
 import { useSigninCheck, useUser } from 'reactfire';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 import LogoutUser from '../libs/logoutUser.js';
 import SignInWithGoogle from '../libs/signInWithGoogle';
-const UserInfo = ({showImage = true, showHandle = true, showName = true, showTweetCount = false }) => { 
+const UserInfo = ({
+  showImage = true, showHandle = true, showName = true, showTweetCount = false,
+  imageClassNames = [],
+  metaInfoStyles = [],
+  rootStyles = []
+}) => { 
   const { status, data: user } = useUser();
 
   if (status === 'loading' || user===null) {
@@ -10,9 +16,22 @@ const UserInfo = ({showImage = true, showHandle = true, showName = true, showTwe
   }
   
   return (
-    <div className='flex-row items-center inline-flex'>
-      {showImage && <img width={40} height={40} className='rounded-full inline-block mr-2 my-4' src={user.photoURL} alt={user.displayName} />}
-      <div className='inline-block'>
+    <div className={classNames('flex-row items-center inline-flex', ...rootStyles)}>
+      {showImage && (
+        <img width={40} height={40}
+          className={
+            classNames(
+              'rounded-full', 'inline-block',
+              { "mr-2 my-4": showHandle || showName || showTweetCount },
+              ...imageClassNames
+            )
+          }
+          src={user.photoURL}
+          alt={user.displayName}
+        />
+      )
+      }
+      <div className={classNames('inline-block', ...metaInfoStyles)}>
         {showName && <div className='leading-3'>{user.displayName}</div>}
         {showHandle && <div className='text-sm text-slate-500'>@{user.email.replace(/@.+/g, '')}</div>}
         {showTweetCount && <div className='text-sm text-slate-500 pt-2'>0 Tweets</div>}
@@ -41,6 +60,6 @@ export default  function AuthenticateWithFirebase () {
   return useComponentWithFirebase('auth', Authenticate, {})
 }
 
-export const ShowUserInfo = ({showImage, showHandle, showName, showTweetCount}) => { 
-  return useComponentWithFirebase('auth', UserInfo, {showImage, showHandle, showName, showTweetCount })
+export const ShowUserInfo = (props) => { 
+  return useComponentWithFirebase('auth', UserInfo, props)
 }
