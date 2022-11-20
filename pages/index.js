@@ -1,18 +1,16 @@
 import Head from 'next/head';
-import Authenticate from '../components/Authenticate';
-
+import Layout from '../components/Layout';
 
 export default function Home() {
   return (
-    <div className="container">
+    <Layout page={'home'}>
       <Head>
-        <title>Create Next App</title>
+        <title>Home</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1 className='text-2xl'>Next Twitter</h1>
-        <Authenticate />
+        <h1 className='text-xl mt-2 text-sky-500 font-semibold'>Home</h1>
       </main>
-    </div>
+    </Layout>
   )
 }
