@@ -1,9 +1,9 @@
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { AuthProvider, useFirebaseApp } from 'reactfire';
+import { AuthProvider, FirestoreProvider, useFirebaseApp } from 'reactfire';
 
 const instanceFetcherMap = {
-  'firebase': getFirestore,
+  'firestore': getFirestore,
   'auth': getAuth
 }
 export default function useComponentWithFirebase(firebaseType, Component, props = {}) {
