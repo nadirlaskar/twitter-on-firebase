@@ -14,7 +14,8 @@
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "reactfire": "^4.2.2"
+    "reactfire": "^4.2.2",
+    "tw-elements": "^1.0.0-alpha12"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",

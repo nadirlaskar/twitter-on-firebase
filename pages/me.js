@@ -1,8 +1,16 @@
 import Head from 'next/head';
+import router from 'next/router';
+import { useSigninCheck } from 'reactfire';
 import Layout from '../components/Layout';
 import ProfileHeader from '../components/ProfileHeader';
+import Loading from '../components/ui-blocks/loading';
+import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 
-export default function Home() {
+function Me() {
+  const { status, data: signInCheckResult } = useSigninCheck();
+  if (status==='success' && !signInCheckResult.signedIn) { 
+    router.push('/');
+  }
   return (
     <Layout page={'profile'}>
       <Head>
@@ -10,8 +18,15 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <ProfileHeader />
+        {status === 'loading' && <Loading className={'m-12 text-sky-600'} />}
+        {status === 'success' && signInCheckResult.signedIn && (
+          <ProfileHeader />
+        )}
       </main>
     </Layout>
   )
+}
+
+export default (props) => { 
+  return useComponentWithFirebase('auth', Me, props)
 }

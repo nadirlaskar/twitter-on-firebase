@@ -1,9 +1,11 @@
+import { XMarkIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
+import router from 'next/router';
 import { useCallback, useState } from 'react';
 import { useSigninCheck, useUser } from 'reactfire';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 import LogoutUser from '../libs/logoutUser.js';
-import SignInWithGoogle from '../libs/signInWithGoogle';
+import SignInWithGoogle from '../libs/signInWith';
 import Modal from './ui-blocks/popup';
 
 const UserInfo = ({
@@ -105,12 +107,28 @@ function Authenticate() {
       <button className='text-white bg-slate-400 p-4 rounded-full hover:bg-sky-600 text-sm w-full' onClick={LogoutUser}>Logout</button>
     </>;
   } else {
-     return <button  className='text-white bg-sky-500 p-4 rounded-full hover:bg-sky-600 text-lg w-full'  onClick={() => { SignInWithGoogle(); }}>Sign In</button>
+    return <button className='text-white bg-sky-500 p-4 rounded-full hover:bg-sky-600 text-lg w-full' onClick={() => {
+      SignInWithGoogle().then(() => { 
+        router.push('/me');
+      });
+    }}>Sign In</button>
   }
 }
 
 export default  function AuthenticateWithFirebase () { 
   return useComponentWithFirebase('auth', Authenticate, {})
+}
+
+const EditProfileTitle = ({onClose}) => { 
+  return (
+    <div className='flex justify-between items-center'>
+      <div className='flex items-center'>
+        <XMarkIcon className='w-9 h-9 p-2 rounded-full hover:bg-slate-100 mr-4'  onClick={onClose}/>
+        <div className='text-xl font-bold'>Edit Profile</div>
+      </div>
+      <button className='text-sm mr-2 rounded-full bg-black text-white px-4 py-2 hover:bg-black/75'>Save</button>
+    </div>
+  )
 }
 
 function EditProfile({className}) {
@@ -129,7 +147,10 @@ function EditProfile({className}) {
       >
         Edit Profile
       </button>
-      <Modal isOpen={openEditModal} onClose={toggleEditProfileModal} title={'Edit Profile'}>
+      <Modal
+        isOpen={openEditModal}
+        onClose={toggleEditProfileModal}
+        title={<EditProfileTitle onClose={toggleEditProfileModal}/>}>
         <UserInfoWithCoverPic isEdit={true} />
       </Modal>
     </>

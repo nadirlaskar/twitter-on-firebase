@@ -5,7 +5,7 @@ import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 const ProfileHeader = ({ profileHandle }) => { 
   return (
     <>
-      <h1 className='text-xl my-4 text-black font-semibold flex items-center'>
+      <h1 className='text-xl my-4 text-black font-semibold flex items-center sticky top-4 z-10'>
         <ArrowLeftIcon className='inline-block mr-6 ml-2 h-6 w-6'/>
         <ShowUserInfo showImage={false} showHandle={false} showTweetCount={true} />
       </h1>
