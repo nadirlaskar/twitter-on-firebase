@@ -51,10 +51,10 @@ export const ShowUserInfo = (props) => {
   return useComponentWithFirebase('auth', UserInfo, props)
 }
 
-export const UserInfoWithCoverPic = ({isEdit}) => { 
+export const UserInfoWithCoverPic = ({isEdit, profileHandle}) => { 
   return (
     <>
-      <img src='https://pbs.twimg.com/profile_banners/714176889460432900/1570041174/1500x500' className='w-full h-full' />
+      <img src={'https://picsum.photos/seed/'+profileHandle+'/500/200'} className='w-full h-full' />
       <div className={classNames(
         'relative',
         {
@@ -108,7 +108,8 @@ function Authenticate() {
     </>;
   } else {
     return <button className='text-white bg-sky-500 p-4 rounded-full hover:bg-sky-600 text-lg w-full' onClick={() => {
-      SignInWithGoogle().then(() => { 
+      SignInWithGoogle().then((res) => { 
+        console.log(res);
         router.push('/me');
       });
     }}>Sign In</button>
@@ -133,6 +134,7 @@ const EditProfileTitle = ({onClose}) => {
 
 function EditProfile({className}) {
   const [openEditModal, setOpenEditModal] = useState(false);
+  const { data: user } = useUser();
   const toggleEditProfileModal = useCallback(() => { 
     setOpenEditModal(!openEditModal);
   }, [openEditModal, setOpenEditModal])
@@ -151,7 +153,7 @@ function EditProfile({className}) {
         isOpen={openEditModal}
         onClose={toggleEditProfileModal}
         title={<EditProfileTitle onClose={toggleEditProfileModal}/>}>
-        <UserInfoWithCoverPic isEdit={true} />
+        <UserInfoWithCoverPic isEdit={true} profileHandle={(user.email.replace(/@.+/g, ''))}/>
       </Modal>
     </>
   )

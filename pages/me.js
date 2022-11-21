@@ -11,6 +11,8 @@ function Me() {
   if (status==='success' && !signInCheckResult.signedIn) { 
     router.push('/');
   }
+  console.log(signInCheckResult?.user);
+  const profileHandle = signInCheckResult?.user?.email.replace(/@.+/g, '') || 'me';
   return (
     <Layout page={'profile'}>
       <Head>
@@ -20,7 +22,7 @@ function Me() {
       <main>
         {status === 'loading' && <Loading className={'m-12 text-sky-600'} />}
         {status === 'success' && signInCheckResult.signedIn && (
-          <ProfileHeader />
+          <ProfileHeader profileHandle={profileHandle} />
         )}
       </main>
     </Layout>

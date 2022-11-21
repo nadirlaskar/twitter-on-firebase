@@ -10,7 +10,7 @@ const ProfileHeader = ({ profileHandle }) => {
         <ShowUserInfo showImage={false} showHandle={false} showTweetCount={true} />
       </h1>
       <section className='w-full h-48 border relative'>
-        <UserInfoWithCoverPic />
+        <UserInfoWithCoverPic profileHandle={profileHandle} />
         <EditProfileButton className={'absolute right-2 top-100 mt-2'} />
       </section>
     </>
