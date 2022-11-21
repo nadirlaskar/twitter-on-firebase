@@ -1,10 +1,12 @@
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { AuthProvider, FirestoreProvider, useFirebaseApp } from 'reactfire';
+import { getFunctions } from 'firebase/functions';
+import { AuthProvider, FirestoreProvider, FunctionsProvider, useFirebaseApp } from 'reactfire';
 
 const instanceFetcherMap = {
   'firestore': getFirestore,
-  'auth': getAuth
+  'auth': getAuth,
+  'functions': getFunctions
 }
 export default function useComponentWithFirebase(firebaseType, Component, props = {}) {
   const app = useFirebaseApp();
@@ -19,6 +21,11 @@ export default function useComponentWithFirebase(firebaseType, Component, props 
       <AuthProvider sdk={instanceFetcher(app)}>
         <Component {...props} />
       </AuthProvider>
+    )
+    case 'functions': return (
+      <FunctionsProvider sdk={instanceFetcher(app)}>
+        <Component {...props} />
+      </FunctionsProvider>
     )
   }
 
