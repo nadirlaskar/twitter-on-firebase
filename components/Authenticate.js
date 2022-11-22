@@ -60,7 +60,7 @@ export const ShowUserInfo = (props) => {
 export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => { 
   return (
     <>
-      <img src={'https://picsum.photos/seed/'+profileHandle+'/500/200'} className='w-full h-full max-h-52' />
+      <img src={'https://picsum.photos/seed/'+profileHandle+'/500/200'} className='w-full h-52 max-h-52' />
       <div className={classNames(
         'relative',
         {

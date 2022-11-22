@@ -8,7 +8,7 @@ const Layout = ({ children, page, leftBarChildren }) => {
         <h1 className='text-2xl mt-4 text-sky-500 font-extrabold'>Next Twitter</h1>
         <Sidebar page={page} />
       </div>
-      <div className="w-6/12 overflow-scroll no-scrollbar">
+      <div className="w-6/12 overflow-y-scroll no-scrollbar overflow-x-hidden">
         {children}
       </div>
       <div className="w-4/12 border-l-2 overflow-hidden">
