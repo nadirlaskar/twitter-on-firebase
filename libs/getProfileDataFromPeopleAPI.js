@@ -5,7 +5,7 @@ const getProfileDataFromPeopleAPI = (token) => {
     }
   }).then(res => res.json()).then(res => {
     return {
-      dob: res.birthdays[res.birthdays.length-1].date
+      dob: res.birthdays[res.birthdays.length-1]?.date
     }
   })
 }
