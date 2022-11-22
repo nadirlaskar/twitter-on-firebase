@@ -4,14 +4,21 @@ admin.initializeApp();
 admin.firestore().settings({ignoreUndefinedProperties: true});
 
 const addUserToFireStore = (user) => {
+  const handle = user.email.replace(/@.+/g, "");
   return admin.firestore()
       .collection("users")
       .doc(user.uid)
       .create({
         name: user.displayName,
         email: user.email,
+        handle: handle,
+        photoURL: user.photoURL,
         role: "user",
         isActive: true,
+        joined: {
+          month: new Date().getMonth(),
+          year: new Date().getFullYear(),
+        },
       });
 };
 
@@ -28,13 +35,16 @@ exports.deleteUserListener = functions.auth
     .onDelete(deleteUserFromFireStore);
 
 exports.updateProfile = functions.https.onCall(async (data, context) => {
-  const {name, bio, dob, location, website} = data;
+  let {name, bio, dob, location, profession} = data;
   const uid = context.auth.uid;
   const userRef = admin.firestore().collection("users").doc(uid);
   const user = await userRef.get();
   if (!user.exists) {
     throw new functions.https.HttpsError("not-found", "User not found");
   }
-  await userRef.update({name, bio, dob, location, website});
+  if (user.data().dob) {
+    dob = user.data().dob;
+  }
+  await userRef.update({name, bio, dob, location, profession});
   return {message: "Profile updated successfully"};
 });

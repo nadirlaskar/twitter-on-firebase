@@ -4,14 +4,17 @@ import { httpsCallable } from 'firebase/functions';
 import router from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { useFunctions, useSigninCheck, useUser } from 'reactfire';
+import { useFunctions, useSigninCheck } from 'reactfire';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
+import useProfile from '../hooks/useProfile';
 import getProfileDataFromPeopleAPI from '../libs/getProfileDataFromPeopleAPI';
 import LogoutUser from '../libs/logoutUser.js';
 import SignInWithGoogle from '../libs/signInWith';
 import Input from './ui-blocks/input';
+import Loading from './ui-blocks/loading';
 import Modal from './ui-blocks/popup';
 const UserInfo = ({
+  profileHandle = 'me',
   showImage = true, showHandle = true, showName = true, showTweetCount = false,
   imageClassNames,
   metaInfoStyles ,
@@ -19,10 +22,10 @@ const UserInfo = ({
   handleStyles,
   nameStyles,
 }) => { 
-  const { status, data: user } = useUser();
+  const [ status, user ] = useProfile(profileHandle);
 
   if (status === 'loading' || user===null) {
-    return <div className='items-center inline-flex'>loading...</div>
+    return <Loading className={'text-sky-200 w-5 h-5 border-2'}/>
   }
   
   return (
@@ -37,12 +40,12 @@ const UserInfo = ({
             )
           }
           src={user.photoURL}
-          alt={user.displayName}
+          alt={user?.displayName || user?.name}
         />
       )
       }
       <div className={classNames('inline-block', metaInfoStyles)}>
-        {showName && <div className={classNames('leading-3', nameStyles)}>{user.displayName}</div>}
+        {showName && <div className={classNames('leading-3', nameStyles)}>{user.displayName||user.name}</div>}
         {showHandle && <div className={classNames('text-sm text-slate-500',handleStyles)}>@{user.email.replace(/@.+/g, '')}</div>}
         {showTweetCount && <div className='text-sm text-slate-500 pt-2'>0 Tweets</div>}
       </div>
@@ -54,10 +57,10 @@ export const ShowUserInfo = (props) => {
   return useComponentWithFirebase('auth', UserInfo, props)
 }
 
-export const UserInfoWithCoverPic = ({isEdit, profileHandle}) => { 
+export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => { 
   return (
     <>
-      <img src={'https://picsum.photos/seed/'+profileHandle+'/500/200'} className='w-full h-full' />
+      <img src={'https://picsum.photos/seed/'+profileHandle+'/500/200'} className='w-full h-full max-h-52' />
       <div className={classNames(
         'relative',
         {
@@ -67,6 +70,7 @@ export const UserInfoWithCoverPic = ({isEdit, profileHandle}) => {
         'inline-block'
       )}>
         <ShowUserInfo
+          profileHandle={profileHandle}
           showImage={true}
           showHandle={!isEdit}
           showName={!isEdit}
@@ -103,7 +107,7 @@ function Authenticate() {
   const updateProfile = httpsCallable(functions, 'updateProfile');
 
   if (status === 'loading') {
-    return <span  className='flex items-center w-full'>loading...</span>
+    return <Loading className={'text-sky-200 w-5 h-5 border-2'}/>
   }
 
   if (signInCheckResult.signedIn === true) {
@@ -116,7 +120,6 @@ function Authenticate() {
       SignInWithGoogle().then((res) => { 
         if (res._tokenResponse?.oauthAccessToken) {
           getProfileDataFromPeopleAPI(res._tokenResponse?.oauthAccessToken).then((res) => { 
-            console.log(res);
             updateProfile(res);
           });
         }
@@ -153,7 +156,7 @@ const ProfileInfoForm = () => {
   const {ref:nameRef, ...nameProps} = register('name');
   const {ref:bioRef, ...bioProps} = register('bio');
   const {ref:locationRef, ...locationProps} = register('location');
-  const {ref:websitenRef, ...websitenRefProps} = register('website');
+  const {ref:websitenRef, ...websitenRefProps} = register('profession');
   const {ref:dobRef, ...dobProps} = register('dob');
   return (
     <div className='flex flex-col p-4'>
@@ -167,30 +170,35 @@ const ProfileInfoForm = () => {
          <Input frdRef={locationRef}  label={"Location"} type='text' {...locationProps}/>
       </div>
       <div className='flex flex-col mt-4'>
-        <Input frdRef={websitenRef}  label={"Website"} type='url' {...websitenRefProps}/>
+        <Input frdRef={websitenRef}  label={"Profession"} type='url' {...websitenRefProps}/>
       </div>
       <div className='flex flex-col mt-4'>
-        <Input frdRef={dobRef} label={"Birth date"} type='date' {...dobProps}/>
+        <Input frdRef={dobRef} label={"Birth date"} type='date' disabled {...dobProps}/>
       </div>
     </div> 
   )
 }
 
-function EditProfile({className}) {
+function EditProfile({className, profileHandle}) {
   const [openEditModal, setOpenEditModal] = useState(false);
   const { reset, ...methods } = useForm({
     defaultValues: {
       name: 'John Doe',
     }
   });
-  const { data: user } = useUser();
+  const [_, user] = useProfile(profileHandle);
   const onSave = useCallback((data) => {
     console.log('save', data);
   }, [])
   useEffect(() => {
+    console.log(user);
     if (user) {
       let defaultValues = {};
-      defaultValues.name = user.displayName;
+      defaultValues.name = user.name;
+      defaultValues.bio = user.bio;
+      defaultValues.profession = user.profession;
+      defaultValues.dob = new Date(user.dob.year, user.dob.month-1, user.dob.day+1).toISOString().split('T')[0];
+      defaultValues.location = user.location;
       reset({ ...defaultValues });
     }
   }, [user]);
@@ -215,7 +223,7 @@ function EditProfile({className}) {
           onClose={toggleEditProfileModal}
           onSave={methods.handleSubmit(onSave)}
         />}>
-        <UserInfoWithCoverPic isEdit={true} profileHandle={(user.email.replace(/@.+/g, ''))} />
+        <UserInfoWithCoverPic isEdit={true} profileHandle={profileHandle} />
         <div className='relative bottom-14'>
           <FormProvider {...methods}>
             <ProfileInfoForm />
@@ -227,6 +235,6 @@ function EditProfile({className}) {
   )
 }
 
-export const EditProfileButton = (props) => { 
-  return useComponentWithFirebase('auth', EditProfile, props)
+export const EditProfileButton = (props) => {
+  return  useComponentWithFirebase('auth', EditProfile, props)
 }

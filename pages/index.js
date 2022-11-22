@@ -11,7 +11,7 @@ export default function Home() {
       </Head>
       <main>
         <h1 className='text-xl mt-2 text-sky-500 font-semibold p-2'>Home</h1>
-        <Loading className={'m-12 text-sky-600'}/>
+        <Loading className={'m-12 w-8 h-8 text-sky-600'}/>
       </main>
     </Layout>
   )
