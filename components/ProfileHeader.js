@@ -40,7 +40,7 @@ const ProfileDetails = ({profileHandle='me'}) => {
     </div>
   )
 }
-const ProfileHeader = ({ profileHandle }) => {
+const ProfileHeader = ({ profileHandle, allowEdit = false }) => {
   return (
     <>
       <h1 className='text-xl my-4 text-black font-semibold flex items-center sticky top-4 z-10'>
@@ -49,7 +49,7 @@ const ProfileHeader = ({ profileHandle }) => {
       </h1>
       <section className='w-full h-48 border relative'>
         <UserInfoWithCoverPic profileHandle={profileHandle} />
-        <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-100 mt-2'} />
+        {allowEdit&& <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-100 mt-2'} />}
         <ProfileDetails profileHandle={profileHandle} />
       </section>
     </>

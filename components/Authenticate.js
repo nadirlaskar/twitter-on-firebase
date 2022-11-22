@@ -103,7 +103,7 @@ export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => {
 
 function Authenticate() { 
   const { status, data: signInCheckResult } = useSigninCheck();
-   const functions = useFunctions();
+  const functions = useFunctions();
   const updateProfile = httpsCallable(functions, 'updateProfile');
 
   if (status === 'loading') {
@@ -134,7 +134,7 @@ export default function AuthenticateWithFirebase() {
   return useComponentWithFirebase('functions', WithAuth , {})
 }
 
-const EditProfileTitle = ({onClose, onSave}) => { 
+const EditProfileTitle = ({onClose, onSave, isSaving}) => { 
   return (
     <div className='flex justify-between items-center'>
       <div className='flex items-center'>
@@ -142,8 +142,15 @@ const EditProfileTitle = ({onClose, onSave}) => {
         <div className='text-xl font-bold'>Edit Profile</div>
       </div>
       <button
+        disabled={isSaving}
         onClick={onSave}
-        className='text-sm mr-2 rounded-full bg-black text-white px-4 py-2 hover:bg-black/75'
+        className={classNames(
+          'text-sm mr-2 rounded-full text-white px-4 py-2 hover:bg-black/75',
+          {
+            'bg-black/75 cursor-not-allowed': isSaving,
+            'bg-black': !isSaving
+          }
+        )}
       >
         Save
       </button>
@@ -152,14 +159,14 @@ const EditProfileTitle = ({onClose, onSave}) => {
 }
 
 const ProfileInfoForm = () => {
-  const { register } = useFormContext(); // retrieve all hook methods
+  const { register, formState : {isSubmitting} } = useFormContext(); // retrieve all hook methods
   const {ref:nameRef, ...nameProps} = register('name');
   const {ref:bioRef, ...bioProps} = register('bio');
   const {ref:locationRef, ...locationProps} = register('location');
   const {ref:websitenRef, ...websitenRefProps} = register('profession');
   const {ref:dobRef, ...dobProps} = register('dob');
   return (
-    <div className='flex flex-col p-4'>
+    <fieldset className='flex flex-col p-4' disabled={isSubmitting}>
       <div className='flex flex-col'>
         <Input frdRef={nameRef} label={"Name"} type='text' {...nameProps}/>
       </div>
@@ -175,23 +182,25 @@ const ProfileInfoForm = () => {
       <div className='flex flex-col mt-4'>
         <Input frdRef={dobRef} label={"Birth date"} type='date' disabled {...dobProps}/>
       </div>
-    </div> 
+    </fieldset>
   )
 }
 
 function EditProfile({className, profileHandle}) {
   const [openEditModal, setOpenEditModal] = useState(false);
-  const { reset, ...methods } = useForm({
+  const methods  = useForm({
     defaultValues: {
       name: 'John Doe',
     }
   });
-  const [_, user] = useProfile(profileHandle);
+  const [_, user, updateProfile] = useProfile(profileHandle);
+  const { reset, formState: { isSubmitting } } = methods;
   const onSave = useCallback((data) => {
-    console.log('save', data);
+    return updateProfile(data).then((() => { 
+      setOpenEditModal(false);
+    }));
   }, [])
   useEffect(() => {
-    console.log(user);
     if (user) {
       let defaultValues = {};
       defaultValues.name = user.name;
@@ -203,8 +212,12 @@ function EditProfile({className, profileHandle}) {
     }
   }, [user]);
   const toggleEditProfileModal = useCallback(() => { 
+    if(isSubmitting) return;
     setOpenEditModal(!openEditModal);
-  }, [openEditModal, setOpenEditModal])
+    if(!openEditModal) {
+      reset();
+    }
+  }, [openEditModal, setOpenEditModal, isSubmitting])
   return(
     <>
       <button className={
@@ -220,6 +233,7 @@ function EditProfile({className, profileHandle}) {
         isOpen={openEditModal}
         onClose={toggleEditProfileModal}
         title={<EditProfileTitle
+          isSaving={isSubmitting}
           onClose={toggleEditProfileModal}
           onSave={methods.handleSubmit(onSave)}
         />}>
