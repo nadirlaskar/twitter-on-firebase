@@ -1,6 +1,8 @@
 import { ArrowLeftIcon, BriefcaseIcon, CakeIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import classNames from 'classnames';
 import { EditProfileButton, ShowUserInfo, UserInfoWithCoverPic } from '../components/Authenticate';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
+import useFollowStatusFromFirestore from '../hooks/useFollowStatus';
 import useProfile from '../hooks/useProfile';
 import Loading from './ui-blocks/loading';
 
@@ -40,7 +42,39 @@ const ProfileDetails = ({profileHandle='me'}) => {
     </div>
   )
 }
-const ProfileHeader = ({ profileHandle, allowEdit = false }) => {
+const FollowButton = ({ profileHandle, className }) => {
+  const { status, isFollowing, follow, unfollow } = useFollowStatusFromFirestore(profileHandle);
+  return (
+    <div className={className}>
+      <button
+        onClick={isFollowing ? unfollow : follow}
+        className={classNames(
+          'rounded-full px-4 py-2 text-sm font-semibold w-28 h-11 ',
+          {
+            'bg-sky-500 text-white': !isFollowing,
+            'bg-slate-100 text-slate-400 hover:border-red-400 hover:text-red-400 hover:border group': isFollowing
+          }
+        )}>
+        {status === 'loading' ? (
+          <Loading className={classNames(
+            'w-5 h-5 text-sky-600 border',
+            {
+              'text-white': !isFollowing,
+            }
+          )} />
+        ) :
+        (<>
+            <div className='absolute top-3 left-0 right-0 group-hover:hidden'>{isFollowing ? 'Following' : 'Follow'}</div>
+            {isFollowing && <div className='absolute top-3 left-0 right-0 invisible group-hover:visible'>Unfollow</div>}
+          </>
+        )}
+      </button>
+    </div>
+  )
+}
+
+const ProfileHeader = ({ profileHandle, allowEdit = false, showFollowButton = false }) => {
+  const _showFollowButton = !allowEdit || showFollowButton;
   return (
     <>
       <h1 className='text-xl my-4 text-black font-semibold flex items-center sticky top-4 z-10'>
@@ -49,7 +83,8 @@ const ProfileHeader = ({ profileHandle, allowEdit = false }) => {
       </h1>
       <section className='w-full h-48 border relative'>
         <UserInfoWithCoverPic profileHandle={profileHandle} />
-        {allowEdit&& <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-100 mt-2'} />}
+        {allowEdit && <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-full mt-9'} />}
+        {_showFollowButton && profileHandle && <FollowButton profileHandle={profileHandle}  className={'absolute right-2 top-full mt-9'} />}
         <ProfileDetails profileHandle={profileHandle} />
       </section>
     </>

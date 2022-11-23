@@ -5,7 +5,10 @@ import { useFirestore, useFirestoreCollectionData, useUser } from 'reactfire';
 const useProfile = (profileHandle) => { 
   if (profileHandle === 'me') { 
     const { status, data: user } = useUser();
-    if(user) user.handle = user?.email.replace(/@.+/g, '');
+    if (user) {
+      user.id = user.uid;
+      user.handle = user?.email.replace(/@.+/g, '');
+    }
     return [status, user]
   }
   const firestore = useFirestore();
