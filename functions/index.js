@@ -14,6 +14,7 @@ const addUserToFireStore = (user) => {
         email: user.email,
         handle: handle,
         photoURL: user.photoURL,
+        bio: "Just joined Twitter!",
         role: "user",
         following: [],
         followers: [],
