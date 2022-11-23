@@ -9,8 +9,8 @@ const ProfileDetails = ({profileHandle='me'}) => {
   const [profileDataStatus, profileData] = useProfile(profileHandle);
   if(profileDataStatus === 'loading') return <Loading className={'w-8 h-8 text-sky-600'}/>
   return (
-    <div className='flex-col relative left-4 bottom-20 mx-2'>
-      {profileData?.bio && <div className='text-base text-black py-4'>{profileData.bio}</div>}
+    <div className='flex-col relative left-2 bottom-20 mx-2 pt-2'>
+      {profileData?.bio && <div className='text-base text-black pt-2 pb-4'>{profileData.bio}</div>}
       <div className='flex items-center space-x-4'>
         {profileData?.profession && (
           <div className='text-sm text-slate-500 inline-flex items-center'>

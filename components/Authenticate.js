@@ -41,6 +41,7 @@ const UserInfo = ({
           }
           src={user.photoURL}
           alt={user?.displayName || user?.name}
+          onError={(e)=> e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${user?.name[0]?.toUpperCase()}`}
         />
       )
       }
