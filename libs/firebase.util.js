@@ -1,4 +1,4 @@
-import { collection, endAt, getDocs, getFirestore, orderBy, query, startAt } from "firebase/firestore";
+import { collection, endAt, getDocs, getFirestore, orderBy, query, startAt, where } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 export const searchUserByHandleFromFirebase = async (myQ) => {
@@ -46,4 +46,20 @@ export const unfollowUserFirebase = async (handle) => {
   catch (err) {
     return ['error', err];
   }
+}
+
+export const loadUserProfiles = async (ids) => {
+  // load user profiles from firestore
+  const db = getFirestore();
+  const ref = collection(db, "users");
+  const q = query(ref, where('id', 'in', ids));
+  const qSnapshot = await getDocs(q);
+  const data = {}
+  qSnapshot.forEach((doc) => {
+    data[doc.id] = ({
+      id: doc.id,
+      ...doc.data(),
+    });
+  });
+  return Object.values(data);
 }

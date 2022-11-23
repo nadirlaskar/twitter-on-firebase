@@ -23,31 +23,29 @@ const UserInfo = ({
   nameStyles,
 }) => { 
   const [ status, user ] = useProfile(profileHandle);
-
   if (status === 'loading' || user===null) {
     return <Loading className={'text-sky-200 w-5 h-5 border-2'}/>
   }
-  
   return (
-    <div className={classNames('flex-row items-center inline-flex', rootStyles)}>
+    <div className={classNames('flex-row inline-flex', rootStyles)}>
       {showImage && (
         <img width={40} height={40}
           className={
             classNames(
-              'rounded-full', 'inline-block',
-              { "mr-2 my-4": showHandle || showName || showTweetCount },
+              'rounded-full', 'inline-block ',
+              { "mr-2": showHandle || showName || showTweetCount },
               imageClassNames
             )
           }
           src={user.photoURL}
-          alt={user?.displayName || user?.name}
+          alt={user?.name}
           onError={(e)=> e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${user?.name[0]?.toUpperCase()}`}
         />
       )
       }
       <div className={classNames('inline-block', metaInfoStyles)}>
-        {showName && <div className={classNames('leading-3', nameStyles)}>{user.displayName||user.name}</div>}
-        {showHandle && <div className={classNames('text-sm text-slate-500',handleStyles)}>@{user.email.replace(/@.+/g, '')}</div>}
+        {showName && <div className={classNames('leading-3', nameStyles)}>{user?.name}</div>}
+        {showHandle && <div className={classNames('text-sm text-slate-500',handleStyles)}>@{user?.email.replace(/@.+/g, '')}</div>}
         {showTweetCount && <div className='text-sm text-slate-500 pt-2'>0 Tweets</div>}
       </div>
     </div>
@@ -87,7 +85,7 @@ export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => {
               'text-xl': !isEdit,
               'text-sm': isEdit
             },
-            'text-black', 'block'
+            'text-black', 'block', 'mt-4'
           )}
           rootStyles={'flex flex-col items-start'}
           nameStyles={classNames(
@@ -113,7 +111,7 @@ function Authenticate() {
 
   if (signInCheckResult.signedIn === true) {
     return <>
-      <UserInfo />
+      <UserInfo rootStyles={'items-center'}/>
       <button className='text-white bg-slate-400 p-4 rounded-full hover:bg-sky-600 text-sm w-full' onClick={LogoutUser}>Logout</button>
     </>;
   } else {
@@ -121,7 +119,7 @@ function Authenticate() {
       SignInWithGoogle().then((res) => { 
         if (res._tokenResponse?.oauthAccessToken) {
           getProfileDataFromPeopleAPI(res._tokenResponse?.oauthAccessToken).then((res) => { 
-            updateProfile(res);
+            if(res) updateProfile(res);
           });
         }
         router.push('/me');

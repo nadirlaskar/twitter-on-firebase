@@ -1,9 +1,10 @@
-import { HomeIcon, UserCircleIcon, UserGroupIcon, UserPlusIcon } from '@heroicons/react/24/solid';
+import { BellIcon, HomeIcon, UserCircleIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useSigninCheck } from 'reactfire';
 import Authenticate from '../components/Authenticate';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
+import TwitterHashtagIcon from './icons/HashtagIcon';
 const listItemStyle = `p-4 w-full flex items-center border hover:rounded-full border-transparent cursor-pointer relative`;
 const activeStyle = `absolute left-9 top-3 w-2 h-2 rounded-full bg-sky-500 text-white text-center`;
 const Sidebar = ({ page }) => {
@@ -20,6 +21,16 @@ const Sidebar = ({ page }) => {
               <span className={classNames(`text-xl`, { 'font-semibold': page === 'home' })}>Home</span>
             </li>
             </Link>
+             <li className={classNames(listItemStyle, 'hover:bg-slate-100')}>
+              <TwitterHashtagIcon className='inline-block mr-4 font-bold' width={24} />
+              {page === 'follower' && <span className={activeStyle} />}
+              <span className={classNames(`text-xl`, { 'font-semibold': page === 'follower' })}>Explore</span>
+            </li>
+            <li className={classNames(listItemStyle, 'hover:bg-slate-100', { 'hidden': !signInCheckResult.signedIn })}>
+              <BellIcon className='inline-block mr-4' width={24} />
+              {page === 'following' && <span className={activeStyle} />}
+              <span className={classNames(`text-xl`, { 'font-semibold': page === 'following' })}>Notification</span>
+            </li>
             <Link href='/me'>
               <li className={classNames(listItemStyle, 'hover:bg-slate-100',{ 'hidden': !signInCheckResult.signedIn })}>
                 <UserCircleIcon className='inline-block mr-4' width={24} />
@@ -27,16 +38,6 @@ const Sidebar = ({ page }) => {
                 <span className={classNames(`text-xl`, { 'font-semibold': page === 'profile' })}>Profile</span>
               </li>
             </Link>
-            <li className={classNames(listItemStyle, 'hover:bg-slate-100', { 'hidden': !signInCheckResult.signedIn })}>
-              <UserPlusIcon className='inline-block mr-4' width={24} />
-              {page === 'following' && <span className={activeStyle} />}
-              <span className={classNames(`text-xl`, { 'font-semibold': page === 'following' })}>Following</span>
-            </li>
-            <li className={classNames(listItemStyle, 'hover:bg-slate-100', { 'hidden': !signInCheckResult.signedIn })}>
-              <UserGroupIcon className='inline-block mr-4' width={24} />
-              {page === 'follower' && <span className={activeStyle} />}
-              <span className={classNames(`text-xl`, { 'font-semibold': page === 'follower' })}>Follower</span>
-            </li>
             <li className={classNames(
               listItemStyle, 'py-2 bg-sky-500 rounded-full text-white w-full  hover:bg-sky-600 justify-center mt-5',
               { 'hidden': !signInCheckResult.signedIn }

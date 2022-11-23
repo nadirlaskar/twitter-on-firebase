@@ -4,9 +4,12 @@ const getProfileDataFromPeopleAPI = (token) => {
       Authorization: `Bearer ${token}`
     }
   }).then(res => res.json()).then(res => {
-    return {
-      dob: res.birthdays[res.birthdays.length-1]?.date
+    if (res.birthdays && res.birthdays.length > 0) {
+      return {
+        dob: res.birthdays[res.birthdays.length - 1]?.date
+      }
     }
+    return { dob: null }
   })
 }
  export default getProfileDataFromPeopleAPI;

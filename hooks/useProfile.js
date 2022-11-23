@@ -1,18 +1,19 @@
-import { collection, query, where } from 'firebase/firestore';
+import { collection, getFirestore, query, where } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { useFirestore, useFirestoreCollectionData, useUser } from 'reactfire';
+import { useFirestoreCollectionData, useUser } from 'reactfire';
 
-const useProfile = (profileHandle) => { 
+const useProfile = (handle) => { 
+  const { status, data: user } = useUser();
+  let profileHandle = handle;
   if (profileHandle === 'me') { 
-    const { status, data: user } = useUser();
     if (user) {
-      user.id = user.uid;
-      user.handle = user?.email.replace(/@.+/g, '');
+      user.name = user.displayName;
+      profileHandle = user?.email.replace(/@.+/g, '');
     }
-    return [status, user]
   }
-  const firestore = useFirestore();
+  if (!profileHandle || status==='loading') return ['loading', null];
   const functions = getFunctions();
+  const firestore = getFirestore();
   const updateProfile = httpsCallable(functions, 'updateProfile');
   const ref = collection(firestore, 'users');
   const q = query(ref, where('handle', '==', profileHandle));

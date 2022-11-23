@@ -24,12 +24,13 @@ const useFollowStatusFromFirestore = (handle) => {
       if (status === 'success') {
         setFollowStatus(false);
       }
-      setUpdatingFollowStatus(true);
+      setUpdatingFollowStatus(false);
     }
   }, [userData, profileData]);
   
   useEffect(() => {
     if (profileStatus === 'success' && profileData && userStatus === 'success' && userData) {
+      console.log('profileData', profileData);
       const isFollowing = profileData.followers?.includes(userData.id) ?? false;
       setFollowStatus(isFollowing);
     }

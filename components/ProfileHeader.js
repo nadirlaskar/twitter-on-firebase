@@ -1,5 +1,7 @@
 import { ArrowLeftIcon, BriefcaseIcon, CakeIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
+import Link from 'next/link';
+import router from 'next/router';
 import { EditProfileButton, ShowUserInfo, UserInfoWithCoverPic } from '../components/Authenticate';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 import useFollowStatusFromFirestore from '../hooks/useFollowStatus';
@@ -11,7 +13,7 @@ const ProfileDetails = ({profileHandle='me'}) => {
   const [profileDataStatus, profileData] = useProfile(profileHandle);
   if(profileDataStatus === 'loading') return <Loading className={'w-8 h-8 text-sky-600'}/>
   return (
-    <div className='flex-col relative left-2 bottom-20 mx-2 pt-2'>
+    <div className='flex-col relative left-4 bottom-20 pt-2'>
       {profileData?.bio && <div className='text-base text-black pt-2 pb-4'>{profileData.bio}</div>}
       <div className='flex items-center space-x-4'>
         {profileData?.profession && (
@@ -39,11 +41,24 @@ const ProfileDetails = ({profileHandle='me'}) => {
           </div>
         )}
       </div>
+      <div className='flex space-x-4 text-sm mt-4 text-black'>
+        <Link href={`/u/${profileData?.handle}/follow?tab=following`}>
+          <div className='hover:underline'>
+            <span className='font-bold'>{profileData?.following?.length || 0}</span> <span className='text-slate-500'>Following</span>
+          </div>
+        </Link>
+        <Link href={`/u/${profileData?.handle}/follow?tab=followers`}>
+          <div className='hover:underline'>
+            <span className='font-bold'>{profileData?.followers?.length || 0}</span> <span className='text-slate-500'>Followers</span>
+          </div>
+        </Link>
+      </div>
     </div>
   )
 }
 const FollowButton = ({ profileHandle, className }) => {
   const { status, isFollowing, follow, unfollow } = useFollowStatusFromFirestore(profileHandle);
+  console.log('FollowButton', status, isFollowing);
   return (
     <div className={className}>
       <button
@@ -73,14 +88,20 @@ const FollowButton = ({ profileHandle, className }) => {
   )
 }
 
+export const ProfileTitle = ({ profileHandle, showHandle=false, showTweetCount=false, showImage=false , ...rest }) => {
+  return (
+    <h1 className='text-xl my-4 text-black font-semibold flex items-center sticky top-4 z-10 cursor-pointer'>
+      <ArrowLeftIcon className='inline-block mr-6 ml-2 h-10 w-10 hover:bg-slate-200 rounded-full p-2' onClick={()=>router.back()}/>
+      <ShowUserInfo rootStyles={'items-center'} profileHandle={profileHandle} showImage={showImage} showHandle={showHandle} showTweetCount={showTweetCount} {...rest} />
+    </h1>
+  )
+}
+
 const ProfileHeader = ({ profileHandle, allowEdit = false, showFollowButton = false }) => {
   const _showFollowButton = !allowEdit || showFollowButton;
   return (
     <>
-      <h1 className='text-xl my-4 text-black font-semibold flex items-center sticky top-4 z-10'>
-        <ArrowLeftIcon className='inline-block mr-6 ml-2 h-6 w-6'/>
-        <ShowUserInfo profileHandle={profileHandle} showImage={false} showHandle={false} showTweetCount={true} />
-      </h1>
+      <ProfileTitle profileHandle={profileHandle} showTweetCount={true} />
       <section className='w-full h-48 border relative'>
         <UserInfoWithCoverPic profileHandle={profileHandle} />
         {allowEdit && <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-full mt-9'} />}
