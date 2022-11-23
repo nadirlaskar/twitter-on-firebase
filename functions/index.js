@@ -101,8 +101,8 @@ exports.unfollowUser = functions.https.onCall(async (handle, context) => {
     ref: followingRef,
     data: followingData,
   } = await fetchUserFromFireStoreByHandle(handle);
-  const followingList = followingData.following;
-  if (!followingList.includes(uid)) {
+  const followersList = followingData.followers;
+  if (!followersList.includes(uid)) {
     throw new functions
         .https
         .HttpsError("not-found", "User not followed");
