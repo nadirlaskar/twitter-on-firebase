@@ -110,7 +110,7 @@ exports.unfollowUser = functions.https.onCall(async (handle, context) => {
         .HttpsError("not-found", "User not followed");
   }
   await followerRef.update({
-    following: admin.firestore.FieldValue.arrayRemove(follower.id),
+    following: admin.firestore.FieldValue.arrayRemove(followingData.id),
   });
   await followingRef.update({
     followers: admin.firestore.FieldValue.arrayRemove(uid),
