@@ -113,7 +113,7 @@ exports.unfollowUser = functions.https.onCall(async (handle, context) => {
     following: admin.firestore.FieldValue.arrayRemove(follower.id),
   });
   await followingRef.update({
-    followers: admin.firestore.FieldValue.arrayRemove(follower.id),
+    followers: admin.firestore.FieldValue.arrayRemove(uid),
   });
   return {message: "User unfollowed successfully"};
 });
