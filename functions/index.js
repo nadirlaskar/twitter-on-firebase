@@ -9,6 +9,7 @@ const addUserToFireStore = (user) => {
       .collection("users")
       .doc(user.uid)
       .create({
+        id: user.uid,
         name: user.displayName,
         email: user.email,
         handle: handle,
