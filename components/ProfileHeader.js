@@ -56,15 +56,27 @@ const ProfileDetails = ({profileHandle='me'}) => {
     </div>
   )
 }
-const FollowButton = ({ profileHandle, className }) => {
+export const FollowButton = ({ profileHandle, className }) => {
+  const [userStatus, loggedInUser] = useProfile('me');
   const { status, isFollowing, follow, unfollow } = useFollowStatusFromFirestore(profileHandle);
+  if (userStatus === 'success' && !loggedInUser) {
+    return null;
+  }
   return (
     <div className={className}>
       <button
         disabled={status === 'loading'}
-        onClick={isFollowing ? unfollow : follow}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (isFollowing) {
+            unfollow();
+          } else {
+            follow();
+          }
+        }}
         className={classNames(
-          'rounded-full px-4 py-2 text-sm font-semibold w-28 h-11 ',
+          'relative rounded-full px-4 py-2 text-sm font-semibold w-28 h-11 ',
           {
             'bg-sky-500 text-white': !isFollowing,
             'bg-slate-100 text-slate-400 hover:border-red-400 hover:text-red-400 hover:border group hover:bg-red-100': isFollowing,
