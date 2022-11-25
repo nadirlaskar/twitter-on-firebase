@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import router from 'next/router';
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { useSigninCheck } from 'reactfire';
 import Layout from '../components/Layout';
 import ProfileHeader from '../components/ProfileHeader';
@@ -10,13 +10,15 @@ import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 function Me() {
   const { status, data: signInCheckResult } = useSigninCheck();
   const handleRef = useRef(null);
-  if (status === 'success' && !signInCheckResult.signedIn) { 
-    if (handleRef.current) {
-      router.push('/profile/' + handleRef.current);
-    } else {
-      router.push('/');
+  useEffect(() => { 
+    if (status === 'success' && !signInCheckResult?.signedIn) { 
+      if (handleRef.current) {
+        router.push('/profile/' + handleRef.current);
+      } else {
+        router.push('/');
+      }
     }
-  }
+  },[status, signInCheckResult?.signedIn]);
   useEffect(() => {
     if (signInCheckResult && signInCheckResult.signedIn) {
       handleRef.current = signInCheckResult.user.email.replace(/@.+/g, '');
@@ -39,6 +41,6 @@ function Me() {
   )
 }
 
-export default (props) => { 
+export default memo((props) => { 
   return useComponentWithFirebase('auth', Me, props)
-}
+});

@@ -2,7 +2,7 @@ import { XMarkIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import { httpsCallable } from 'firebase/functions';
 import router from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { useFunctions, useSigninCheck } from 'reactfire';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
@@ -13,48 +13,69 @@ import SignInWithGoogle from '../libs/signInWith';
 import Input from './ui-blocks/input';
 import Loading from './ui-blocks/loading';
 import Modal from './ui-blocks/popup';
-const UserInfo = ({
-  profileHandle = 'me',
-  showImage = true, showHandle = true, showName = true, showTweetCount = false,
-  imageClassNames,
-  metaInfoStyles ,
-  rootStyles,
-  handleStyles,
-  nameStyles,
-}) => { 
-  const [ status, user ] = useProfile(profileHandle);
+const UserInfo = (props) => { 
+  const {
+    profileHandle,
+    showImage = true, showHandle = true, showName = true, showTweetCount = false,
+    showLogout = false,
+    imageClassNames,
+    metaInfoStyles ,
+    rootStyles,
+    handleStyles,
+    nameStyles,
+    logoutButtonStyles,
+  } = props;
+  const [status, user] = useProfile(profileHandle);
+  useEffect(() => {
+    if (user === null && status === 'success') {
+      router.push('/');
+    }
+  }, [user, status]);
   if (status === 'loading' || user===null) {
-    return <Loading className={'text-sky-200 w-5 h-5 border-2'}/>
+    return <Loading className={'text-sky-200 w-5 h-5 border-2 m-2'}/>
   }
   return (
-    <div className={classNames('flex-row inline-flex', rootStyles)}>
-      {showImage && (
-        <img width={40} height={40}
-          className={
-            classNames(
-              'rounded-full', 'inline-block ',
-              { "mr-2": showHandle || showName || showTweetCount },
-              imageClassNames
-            )
-          }
-          src={user.photoURL}
-          alt={user?.name}
-          onError={(e)=> e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${user?.name[0]?.toUpperCase()}`}
-        />
-      )
-      }
-      <div className={classNames('inline-block', metaInfoStyles)}>
-        {showName && <div className={classNames('leading-3', nameStyles)}>{user?.name}</div>}
-        {showHandle && <div className={classNames('text-sm text-slate-500',handleStyles)}>@{user?.email.replace(/@.+/g, '')}</div>}
-        {showTweetCount && <div className='text-sm text-slate-500 pt-2'>0 Tweets</div>}
+    <>
+      <div className={classNames('flex-row inline-flex', rootStyles)}>
+        {showImage && (
+          <img width={40} height={40}
+            className={
+              classNames(
+                'rounded-full', 'inline-block ',
+                { "mr-2": showHandle || showName || showTweetCount },
+                imageClassNames
+              )
+            }
+            src={user.photoURL}
+            alt={user?.name}
+            onError={(e) => {
+              e.target.onerror = null;
+              const initial = user?.name.split(' ').map((n) => n[0]).join('')
+              e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${initial.toUpperCase()}`
+            }}
+          />
+        )
+        }
+        <div className={classNames('inline-block', metaInfoStyles)}>
+          {showName && <div className={classNames('leading-3', nameStyles)}>{user?.name}</div>}
+          {showHandle && <div className={classNames('text-sm text-slate-500',handleStyles)}>@{user?.email.replace(/@.+/g, '')}</div>}
+          {showTweetCount && <div className='text-sm text-slate-500 pt-2'>0 Tweets</div>}
+        </div>
       </div>
-    </div>
+
+      {showLogout && (
+        <button className={classNames(
+          'text-white bg-slate-400 p-4 rounded-full hover:bg-sky-600 text-sm w-full',
+          logoutButtonStyles
+        )} onClick={LogoutUser}>Logout</button>
+      )}
+    </>
   )
 }
 
-export const ShowUserInfo = (props) => { 
-  return useComponentWithFirebase('auth', UserInfo, props)
-}
+export const ShowUserInfo = memo((props) => {
+  return useComponentWithFirebase('auth', UserInfo, props);
+})
 
 export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => { 
   return (
@@ -111,8 +132,7 @@ function Authenticate() {
 
   if (signInCheckResult.signedIn === true) {
     return <>
-      <UserInfo rootStyles={'items-center'}/>
-      <button className='text-white bg-slate-400 p-4 rounded-full hover:bg-sky-600 text-sm w-full' onClick={LogoutUser}>Logout</button>
+      <UserInfo rootStyles={'items-center'} profileHandle={'me'} showLogout={true} />
     </>;
   } else {
     return <button className='text-white bg-sky-500 p-4 rounded-full hover:bg-sky-600 text-lg w-full' onClick={() => {
@@ -128,10 +148,12 @@ function Authenticate() {
   }
 }
 
-export default function AuthenticateWithFirebase() { 
+export default memo(
+  function AuthenticateWithFirebase() {
   const WithAuth = () => useComponentWithFirebase('auth', Authenticate, {});
-  return useComponentWithFirebase('functions', WithAuth , {})
-}
+  return useComponentWithFirebase('functions', WithAuth, {});
+  }
+);
 
 const EditProfileTitle = ({onClose, onSave, isSaving}) => { 
   return (
@@ -248,6 +270,6 @@ function EditProfile({className, profileHandle}) {
   )
 }
 
-export const EditProfileButton = (props) => {
-  return  useComponentWithFirebase('auth', EditProfile, props)
-}
+export const EditProfileButton = memo((props) => {
+  return useComponentWithFirebase('auth', EditProfile, props);
+});

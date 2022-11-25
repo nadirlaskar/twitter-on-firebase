@@ -2,6 +2,7 @@ import { ArrowLeftIcon, BriefcaseIcon, CakeIcon, CalendarDaysIcon, MapPinIcon } 
 import classNames from 'classnames';
 import Link from 'next/link';
 import router from 'next/router';
+import { memo } from 'react';
 import { EditProfileButton, ShowUserInfo, UserInfoWithCoverPic } from '../components/Authenticate';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 import useFollowStatusFromFirestore from '../hooks/useFollowStatus';
@@ -103,7 +104,7 @@ export const FollowButton = ({ profileHandle, className }) => {
   )
 }
 
-export const ProfileTitle = ({ profileHandle, showHandle=false, showTweetCount=false, showImage=false , ...rest }) => {
+export const ProfileTitle = ({ profileHandle, showHandle = false, showTweetCount = false, showImage = false, ...rest }) => {
   return (
     <h1 className='text-xl my-4 text-black font-semibold flex items-center sticky top-4 z-10 cursor-pointer'>
       <ArrowLeftIcon className='inline-block mr-6 ml-2 h-10 w-10 hover:bg-slate-200 rounded-full p-2' onClick={()=>router.back()}/>
@@ -127,6 +128,6 @@ const ProfileHeader = ({ profileHandle, allowEdit = false, showFollowButton = fa
   )
 }
 
-export default (props) => {
+export default memo((props) => {
   return useComponentWithFirebase('firestore', ProfileHeader, props);
-};
+})
