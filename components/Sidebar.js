@@ -17,29 +17,29 @@ const Sidebar = ({ page }) => {
           <>
             <Link href='/'>
             <li className={classNames(listItemStyle, 'hover:bg-slate-100')}>
-              <HomeIcon className='inline-block lg:mr-4' width={24} />
+              <HomeIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
               {page === 'home' && <span className={activeStyle} />}
               <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'home' })}>Home</span>
             </li>
             </Link>
             <Link href='/u/search'>
             <li className={classNames(listItemStyle, 'hover:bg-slate-100 lg:hidden')}>
-              <MagnifyingGlassIcon className='inline-block lg:mr-4' width={24} />
+              <MagnifyingGlassIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
             </li>
             </Link>
              <li className={classNames(listItemStyle, 'hover:bg-slate-100')}>
-              <TwitterHashtagIcon className='inline-block lg:mr-4 font-bold' width={24} />
+              <TwitterHashtagIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
               {page === 'follower' && <span className={activeStyle} />}
               <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'follower' })}>Explore</span>
             </li>
             <li className={classNames(listItemStyle, 'hover:bg-slate-100', { 'hidden': !signInCheckResult.signedIn })}>
-              <BellIcon className='inline-block lg:mr-4' width={24} />
+              <BellIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
               {page === 'following' && <span className={activeStyle} />}
               <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'following' })}>Notification</span>
             </li>
             <Link href='/me'>
               <li className={classNames(listItemStyle, 'hover:bg-slate-100',{ 'hidden': !signInCheckResult.signedIn })}>
-                <UserCircleIcon className='inline-block lg:mr-4' width={24} />
+                <UserCircleIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
                 {page === 'profile' && <span className={activeStyle} />}
                 <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'profile' })}>Profile</span>
               </li>
