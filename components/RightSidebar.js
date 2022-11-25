@@ -16,7 +16,7 @@ const SearchInput = () => {
     }
   }, [debouncedSearch])
   return (
-    <div className='relative flex items-center justify-center rounded-full bg-slate-200 border-2 text-slate-400 pl-4 w-4/6 hover:border-sky-600 hover:border-2 hover:text-sky-600 hover:bg-slate-50'>
+    <div className='relative flex items-center justify-center rounded-full bg-slate-200 border-2 text-slate-400 pl-4 w-full max-w-xs hover:border-sky-600 hover:border-2 hover:text-sky-600 hover:bg-slate-50'>
       <MagnifyingGlassIcon className="w-6 h-6 mr-1  hover:text-sky-600"/>
       <AutoComplete
         setSelected={(selected) => { 
@@ -59,11 +59,11 @@ const SearchInput = () => {
     </div>
   )
 }
-const Sidebar = () => {
+const RightSidebar = () => {
   return (
-    <div className='flex flex-col h-full relative px-2 mt-2'>
+    <div className='flex flex-col w-full h-full relative px-2 mt-2'>
       <SearchInput />
     </div>
   )
 }
-export default Sidebar;
+export default RightSidebar;

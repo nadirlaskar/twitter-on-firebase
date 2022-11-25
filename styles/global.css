@@ -15,4 +15,8 @@
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
     }
+
+    .text-xxs {
+      font-size: 0.6rem;
+    }
 }

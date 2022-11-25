@@ -1,4 +1,4 @@
-import { XMarkIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftOnRectangleIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import { httpsCallable } from 'firebase/functions';
 import router from 'next/router';
@@ -26,17 +26,12 @@ const UserInfo = (props) => {
     logoutButtonStyles,
   } = props;
   const [status, user] = useProfile(profileHandle);
-  useEffect(() => {
-    if (user === null && status === 'success') {
-      router.push('/');
-    }
-  }, [user, status]);
   if (status === 'loading' || user===null) {
     return <Loading className={'text-sky-200 w-5 h-5 border-2 m-2'}/>
   }
   return (
     <>
-      <div className={classNames('flex-row inline-flex', rootStyles)}>
+      <div className={classNames('relative flex-row inline-flex group', rootStyles)}>
         {showImage && (
           <img width={40} height={40}
             className={
@@ -54,20 +49,34 @@ const UserInfo = (props) => {
               e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${initial.toUpperCase()}`
             }}
           />
-        )
-        }
-        <div className={classNames('inline-block', metaInfoStyles)}>
-          {showName && <div className={classNames('leading-3', nameStyles)}>{user?.name}</div>}
+        )}
+        <div className={classNames(
+          {
+            'hidden lg:inline-block': showLogout,
+            'inline-block': !showLogout
+          },
+          metaInfoStyles
+        )}>
+          {showName && <div className={classNames('md:leading-3 text-sm md:text-base', nameStyles)}>{user?.name}</div>}
           {showHandle && <div className={classNames('text-sm text-slate-500',handleStyles)}>@{user?.email.replace(/@.+/g, '')}</div>}
-          {showTweetCount && <div className='text-sm text-slate-500 pt-2'>0 Tweets</div>}
+          {showTweetCount && <div className='text-xxs leading-3 sm:text-sm text-slate-500 sm:pt-2'>0 Tweets</div>}
         </div>
       </div>
 
       {showLogout && (
         <button className={classNames(
-          'text-white bg-slate-400 p-4 rounded-full hover:bg-sky-600 text-sm w-full',
+          'text-slate-500 lg:text-white hover:bg-slate-100 p-2 lg:bg-slate-400 lg:mt-2 lg:p-4 rounded-full lg:hover:bg-sky-600 text-xxs lg:text-sm w-full',
           logoutButtonStyles
-        )} onClick={LogoutUser}>Logout</button>
+        )} onClick={LogoutUser}>
+          <ArrowLeftOnRectangleIcon className={classNames(
+              {
+                'hidden': !showLogout,
+                'w-4 h-4 group-hover:visible text-slate-white inline-block ': showLogout
+              }
+            )}
+          />
+          <span> Logout</span>
+        </button>
       )}
     </>
   )

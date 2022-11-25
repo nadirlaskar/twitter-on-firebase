@@ -5,7 +5,9 @@ export default () => {
   const router = useRouter();
   const { page } = router.query;
   useEffect(() => {
-    router.push(`profile/${page}`);
-  });
+    if (page && !['me', 'search'].includes(page)) {
+      router.push(`profile/${page}`);
+    }
+  },[page]);
   return null;
 }
