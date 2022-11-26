@@ -81,7 +81,7 @@ const FollowList = () => {
           {profiles.length === 0 && (<div className="text-slate-400 text-center w-full h-1/4 flex items-center justify-center">{`No ${activeTab} yet`}</div>)}
           {profiles?.map((profile) => (
             <Link key={profile.id}  href={`/profile/${profile.handle}`}>
-              <div key={profile.handle} className={'flex items-center p-2 hover:bg-slate-100 justify-between'}>
+              <div key={profile.handle} className={'flex items-start p-2 hover:bg-slate-100 justify-between'}>
                 <div className={'flex items-start'}>
                   <img width={48} height={48} src={profile.photoURL} className={'rounded-full mr-2'} onError={(e) => { 
                     e.target.onerror = null;
@@ -89,14 +89,14 @@ const FollowList = () => {
                     e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${initial.toUpperCase()}`;
                   }} />
                   <div className={'flex flex-col'}>
-                      <span className={'font-bold hover:underline'}>{profile.name}</span>
-                    <span className={'text-gray-500'}>
+                      <span className={'text-sm md:text-base font-bold hover:underline'}>{profile.name}</span>
+                    <span className={'text-xxs md:text-base text-gray-500'}>
                       @{profile.handle}
                       {loggedInUser?.uid && !profile.following?.includes(loggedInUser?.uid) && (
                         <span className="ml-1 p-1 rounded-sm font-medium text-xs bg-slate-100 text-slate-600">Follows you</span>
                       )}
                     </span>
-                    <span className="py-1 text-sm text-slate-800">
+                    <span className="py-1 text-xxs md:text-sm text-slate-800">
                       {profile.bio}
                     </span>
                   </div>
