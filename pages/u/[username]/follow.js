@@ -2,7 +2,7 @@ import classNames from "classnames";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../../components/Layout";
 import { FollowButton, ProfileTitle } from "../../../components/ProfileHeader";
 import Loading from "../../../components/ui-blocks/loading";
@@ -111,7 +111,7 @@ const FollowList = () => {
   );
 }
 
-export default memo((props) => {
+export default (props) => {
   const WithAuth = () => useComponentWithFirebase('auth', FollowList, props);
   return useComponentWithFirebase('firestore', WithAuth, props);
-});
+};

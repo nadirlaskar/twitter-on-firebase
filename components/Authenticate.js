@@ -82,9 +82,9 @@ const UserInfo = (props) => {
   )
 }
 
-export const ShowUserInfo = memo((props) => {
+export const ShowUserInfo = (props) => {
   return useComponentWithFirebase('auth', UserInfo, props);
-})
+}
 
 export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => { 
   return (
@@ -287,6 +287,6 @@ function EditProfile({className, profileHandle}) {
   )
 }
 
-export const EditProfileButton = memo((props) => {
+export const EditProfileButton = (props) => {
   return useComponentWithFirebase('auth', EditProfile, props);
-});
+};

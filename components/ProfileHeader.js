@@ -2,7 +2,6 @@ import { ArrowLeftIcon, BriefcaseIcon, CakeIcon, CalendarDaysIcon, MapPinIcon } 
 import classNames from 'classnames';
 import Link from 'next/link';
 import router from 'next/router';
-import { memo } from 'react';
 import { EditProfileButton, ShowUserInfo, UserInfoWithCoverPic } from '../components/Authenticate';
 import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 import useFollowStatusFromFirestore from '../hooks/useFollowStatus';
@@ -128,6 +127,6 @@ const ProfileHeader = ({ profileHandle, allowEdit = false, showFollowButton = fa
   )
 }
 
-export default memo((props) => {
+export default (props) => {
   return useComponentWithFirebase('firestore', ProfileHeader, props);
-})
+}

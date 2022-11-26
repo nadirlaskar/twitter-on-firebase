@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import router from 'next/router';
-import { memo, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSigninCheck } from 'reactfire';
 import Layout from '../components/Layout';
 import ProfileHeader from '../components/ProfileHeader';
@@ -41,6 +41,6 @@ function Me() {
   )
 }
 
-export default memo((props) => { 
+export default (props) => { 
   return useComponentWithFirebase('auth', Me, props)
-});
+};
