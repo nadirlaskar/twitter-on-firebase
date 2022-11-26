@@ -144,7 +144,12 @@ function Authenticate() {
       <UserInfo rootStyles={'items-center'} profileHandle={'me'} showLogout={true} />
     </>;
   } else {
-    return <button className='text-white bg-sky-500 p-4 rounded-full hover:bg-sky-600 text-lg w-full' onClick={() => {
+    return (
+      <button
+      className={classNames(
+        'fixed bottom-0 left-0 rounded-0 right-0 w-full lg:static lg:m-0 md:container md:mx-auto',
+        'text-white bg-sky-500 p-4 lg:rounded-full hover:bg-sky-600 text-lg w-full'
+      )} onClick={() => {
       SignInWithGoogle().then((res) => { 
         if (res._tokenResponse?.oauthAccessToken) {
           getProfileDataFromPeopleAPI(res._tokenResponse?.oauthAccessToken).then((res) => { 
@@ -153,7 +158,10 @@ function Authenticate() {
         }
         router.push('/me');
       });
-    }}>Sign In</button>
+    }}>
+      Sign In
+      </button>
+    )
   }
 }
 
