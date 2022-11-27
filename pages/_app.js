@@ -9,7 +9,7 @@ export default function App({ Component, pageProps }) {
       <Head>
         <meta name="viewport" content="width=device-width, user-scalable=none" />
       </Head>
-        <Component {...pageProps} />
+      <Component {...pageProps} />
     </FirebaseAppProvider>
   );
 }

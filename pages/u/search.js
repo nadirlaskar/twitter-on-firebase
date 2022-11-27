@@ -3,7 +3,7 @@ import RightSidebar from "../../components/RightSidebar"
 
 export default () => { 
   return (
-    <Layout leftBarChildren={() => null}>
+    <Layout leftBarChildren={<></>}>
       <RightSidebar />
     </Layout>
   )
