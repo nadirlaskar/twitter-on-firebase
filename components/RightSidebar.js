@@ -4,6 +4,7 @@ import { push } from "next/router";
 import { useEffect, useState } from "react";
 import useDebounce from "../hooks/useDebounce";
 import { searchUserByHandleFromFirebase } from "../libs/firebase.util";
+import FollowSuggestions from "./FollowSuggestions";
 import AutoComplete from "./ui-blocks/autoComplete";
 
 const SearchInput = () => {
@@ -16,7 +17,7 @@ const SearchInput = () => {
     }
   }, [debouncedSearch])
   return (
-    <div className='relative flex items-center justify-center rounded-full bg-slate-200 border-2 text-slate-400 pl-4 w-full max-w-xs hover:border-sky-600 hover:border-2 hover:text-sky-600 hover:bg-slate-50'>
+    <div className='relative flex items-center justify-center rounded-full bg-slate-200 border-2 text-slate-400 pl-4 w-full max-w-xs hover:border-sky-600 hover:border-2 hover:text-sky-600 hover:bg-slate-50 lg:max-w-lg'>
       <MagnifyingGlassIcon className="w-6 h-6 mr-1  hover:text-sky-600"/>
       <AutoComplete
         setSelected={(selected) => { 
@@ -63,6 +64,7 @@ const RightSidebar = () => {
   return (
     <div className='flex flex-col w-full h-full relative px-2 mt-2'>
       <SearchInput />
+      <FollowSuggestions />
     </div>
   )
 }

@@ -1,10 +1,16 @@
-import Layout from "../components/Layout"
-import RightSidebar from "../components/RightSidebar"
+import Layout from "../components/Layout";
+import RightSidebar from "../components/RightSidebar";
+import useComponentWithFirebase from "../hooks/useComponentWithFirebase";
 
-export default () => { 
+const Search =  () => { 
   return (
     <Layout leftBarChildren={<></>}>
       <RightSidebar />
     </Layout>
   )
 }
+
+export default (props) => {
+  const WithAuth = (innerProps) => useComponentWithFirebase('auth', Search, innerProps);
+  return useComponentWithFirebase('firestore', WithAuth, props);
+};
