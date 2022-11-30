@@ -159,7 +159,7 @@ function Authenticate() {
                 if(res) updateProfile(res);
               });
             }
-            router.push('/me');
+            router.push('/search');
           });
        }}>
         Sign In
