@@ -13,7 +13,7 @@ const ProfileDetails = ({profileHandle='me'}) => {
   const [profileDataStatus, profileData] = useProfile(profileHandle);
   if(profileDataStatus === 'loading') return <Loading className={'w-8 h-8 text-sky-600'}/>
   return (
-    <div className='flex-col relative left-4 bottom-20 pt-2'>
+    <div className='flex-col ml-4 pt-2'>
       {profileData?.bio && <div className='text-base text-black pt-2 pb-4'>{profileData.bio}</div>}
       <div className='flex items-center gap-x-4 flex-wrap gap-y-1'>
         {profileData?.profession && (
@@ -105,7 +105,7 @@ export const FollowButton = ({ profileHandle, className }) => {
 
 export const ProfileTitle = ({ profileHandle, showHandle = false, showTweetCount = false, showImage = false, ...rest }) => {
   return (
-    <h1 className='text-xl my-4 text-black font-semibold flex items-center sticky top-4 z-10 cursor-pointer'>
+    <h1 className='text-xl py-4 text-black font-semibold flex items-center sticky top-0 z-10 cursor-pointer bg-white/70'>
       <ArrowLeftIcon className='inline-block mr-2 md:mr-6 ml-2 h-10 w-10 hover:bg-slate-200 rounded-full p-2' onClick={()=>router.back()}/>
       <ShowUserInfo rootStyles={'items-center'} profileHandle={profileHandle} showImage={showImage} showHandle={showHandle} showTweetCount={showTweetCount} {...rest} />
     </h1>
@@ -117,10 +117,10 @@ const ProfileHeader = ({ profileHandle, allowEdit = false, showFollowButton = fa
   return (
     <>
       <ProfileTitle profileHandle={profileHandle} showTweetCount={true} />
-      <section className='w-full h-48 border relative'>
+      <section className='w-full border relative pb-4'>
         <UserInfoWithCoverPic profileHandle={profileHandle} />
-        {allowEdit && <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-full mt-6'} />}
-        {_showFollowButton && profileHandle && <FollowButton profileHandle={profileHandle}  className={'absolute right-2 top-full mt-6'} />}
+        {allowEdit && <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-48 mt-6'} />}
+        {_showFollowButton && profileHandle && <FollowButton profileHandle={profileHandle}  className={'absolute right-2 top-48 mt-6'} />}
         <ProfileDetails profileHandle={profileHandle} />
       </section>
     </>

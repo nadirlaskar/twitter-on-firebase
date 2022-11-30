@@ -1,5 +1,6 @@
 import { collection, endAt, getDocs, getFirestore, orderBy, query, startAt, where } from "firebase/firestore";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { httpsCallable } from "firebase/functions";
+import { getFirebaseInstance } from "../hooks/useComponentWithFirebase";
 
 export const searchUserByHandleFromFirebase = async (myQ) => {
   const db = getFirestore();
@@ -25,7 +26,7 @@ export const searchUserByHandleFromFirebase = async (myQ) => {
 }
 
 export const followUserFirebase = async (handle) => {
-  const functions = getFunctions();
+  const functions = getFirebaseInstance('functions');
   const followUser = httpsCallable(functions, 'followUser');
   try {
     const result = await followUser(handle);
@@ -37,7 +38,7 @@ export const followUserFirebase = async (handle) => {
 }
 
 export const unfollowUserFirebase = async (handle) => {
-  const functions = getFunctions();
+  const functions = getFirebaseInstance('functions');
   const unfollowUser = httpsCallable(functions, 'unfollowUser');
   try {
     const result = await unfollowUser(handle);
@@ -62,4 +63,41 @@ export const loadUserProfiles = async (ids) => {
     });
   });
   return Object.values(data);
+}
+
+export const sendTweet = async (tweet) => {
+  const functions = getFirebaseInstance('functions');
+  const sendTweet = httpsCallable(functions, 'sendTweet');
+  const result = await sendTweet({ tweet });
+  return result.data;
+}
+
+// call firebase function getHomeTweets
+export const getHomeTweets = async () => {
+  const functions = getFirebaseInstance('functions');
+  const getHomeTweets = httpsCallable(functions, 'getHomeTweets');
+  const result = await getHomeTweets();
+  return result;
+}
+
+// call firebase function getHomeTweets
+export const getProfileTweets = async (handle = 'me') => {
+  const functions = getFirebaseInstance('functions');
+  const getProfileTweets = httpsCallable(functions, 'getProfileTweets');
+  const result = await getProfileTweets(handle);
+  return result;
+}
+
+export const likeTweet = async (tweetId) => {
+  const functions = getFirebaseInstance('functions');
+  const likeTweet = httpsCallable(functions, 'likeTweet');
+  const result = await likeTweet(tweetId);
+  return result.data;
+}
+
+export const retweet = async (tweetId) => {
+  const functions = getFirebaseInstance('functions');
+  const retweet = httpsCallable(functions, 'retweet');
+  const result = await retweet(tweetId);
+  return result.data;
 }

@@ -5,7 +5,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy-functions": "firebase deploy --only functions"
+    "deploy-functions": "firebase deploy --only functions",
+    "firebase-emulator-start": "firebase emulators:start --export-on-exit=./emulator-data --import=./emulator-data"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.4",

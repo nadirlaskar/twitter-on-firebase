@@ -11,7 +11,7 @@ const Layout = ({ children, page, leftBarChildren }) => {
         </h1>
         <Sidebar page={page} />
       </div>
-      <div className="lg:w-6/12 w-full overflow-y-scroll no-scrollbar overflow-x-hidden">
+      <div className="lg:w-6/12 w-full h-screen overflow-y-scroll no-scrollbar overflow-x-hidden">
         {children}
       </div>
       <div className="md:w-2/6 lg:w-3/12 xl:w-4/12 border-l overflow-hidden hidden lg:block">

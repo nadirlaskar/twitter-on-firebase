@@ -4,8 +4,8 @@ import { httpsCallable } from 'firebase/functions';
 import router from 'next/router';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { useFunctions, useSigninCheck } from 'reactfire';
-import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
+import { useSigninCheck } from 'reactfire';
+import useComponentWithFirebase, { getFirebaseInstance } from '../hooks/useComponentWithFirebase';
 import useProfile from '../hooks/useProfile';
 import getProfileDataFromPeopleAPI from '../libs/getProfileDataFromPeopleAPI';
 import LogoutUser from '../libs/logoutUser.js';
@@ -29,6 +29,8 @@ const UserInfo = (props) => {
   if (status === 'loading' || user===null) {
     return <Loading className={'text-sky-200 w-5 h-5 border-2 m-2'}/>
   }
+  const initial = user?.name.split(' ').map((n) => n[0]).join('')
+  const fallabckImage = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${initial.toUpperCase()}`;
   return (
     <>
       <div className={classNames('relative flex-row inline-flex group', rootStyles)}>
@@ -41,12 +43,11 @@ const UserInfo = (props) => {
                 imageClassNames
               )
             }
-            src={user.photoURL}
+            src={user.photoURL || fallabckImage}
             alt={user?.name}
             onError={(e) => {
               e.target.onerror = null;
-              const initial = user?.name.split(' ').map((n) => n[0]).join('')
-              e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${initial.toUpperCase()}`
+              e.target.src = fallabckImage
             }}
           />
         )}
@@ -59,7 +60,7 @@ const UserInfo = (props) => {
         )}>
           {showName && <div className={classNames('md:leading-3 text-sm md:text-base', nameStyles)}>{user?.name}</div>}
           {showHandle && <div className={classNames('text-sm text-slate-500',handleStyles)}>@{user?.email.replace(/@.+/g, '')}</div>}
-          {showTweetCount && <div className='text-xxs leading-3 sm:text-sm text-slate-500 sm:pt-2'>0 Tweets</div>}
+          {showTweetCount && <div className='text-xxs leading-3 sm:text-sm text-slate-500 sm:pt-2'>{user?.tweets?.length} Tweets</div>}
         </div>
       </div>
 
@@ -91,10 +92,10 @@ export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => {
     <>
       <img src={'https://picsum.photos/seed/'+profileHandle+'/500/200'} className='w-full h-52 max-h-52' />
       <div className={classNames(
-        'relative',
+        'ml-4',
         {
-          'bottom-20 left-4': !isEdit,
-          'bottom-14 left-4': isEdit
+          '-mt-20': !isEdit,
+          '-mt-12': isEdit
         },
         'inline-block'
       )}>
@@ -132,7 +133,7 @@ export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => {
 
 function Authenticate() { 
   const { status, data: signInCheckResult } = useSigninCheck();
-  const functions = useFunctions();
+  const functions = getFirebaseInstance('functions');
   const updateProfile = httpsCallable(functions, 'updateProfile');
 
   if (status === 'loading') {
@@ -148,20 +149,22 @@ function Authenticate() {
       <button
       className={classNames(
         'fixed bottom-0 left-0 rounded-0 right-0 w-full lg:static lg:m-0 md:container md:mx-auto',
-        'text-white bg-sky-500 p-4 lg:rounded-full hover:bg-sky-600 text-lg w-full'
-      )} onClick={() => {
-      SignInWithGoogle().then((res) => { 
-        if (res._tokenResponse?.oauthAccessToken) {
-          getProfileDataFromPeopleAPI(res._tokenResponse?.oauthAccessToken).then((res) => { 
-            if(res) updateProfile(res);
+        'text-white bg-sky-500 p-4 lg:rounded-full hover:bg-sky-600 text-lg w-full z-40'
+        )}
+        onClick={() => {
+          console.log('signing in');
+          SignInWithGoogle().then((res) => { 
+            if (res?._tokenResponse?.oauthAccessToken) {
+              getProfileDataFromPeopleAPI(res._tokenResponse?.oauthAccessToken).then((res) => { 
+                if(res) updateProfile(res);
+              });
+            }
+            router.push('/me');
           });
-        }
-        router.push('/me');
-      });
-    }}>
-      Sign In
+       }}>
+        Sign In
       </button>
-    )
+  )
   }
 }
 
@@ -174,7 +177,7 @@ export default memo(
 
 const EditProfileTitle = ({onClose, onSave, isSaving}) => { 
   return (
-    <div className='flex justify-between items-center'>
+    <div className='flex justify-between items-center py-4 px-3'>
       <div className='flex items-center'>
         <XMarkIcon className='w-9 h-9 p-2 rounded-full hover:bg-slate-100 mr-4'  onClick={onClose}/>
         <div className='text-xl font-bold'>Edit Profile</div>
@@ -244,7 +247,7 @@ function EditProfile({className, profileHandle}) {
       defaultValues.name = user.name;
       defaultValues.bio = user.bio;
       defaultValues.profession = user.profession;
-      defaultValues.dob = new Date(user.dob.year, user.dob.month-1, user.dob.day+1).toISOString().split('T')[0];
+      defaultValues.dob = user.dob && (new Date(user.dob.year, user.dob.month-1, user.dob.day+1).toISOString().split('T')[0]);
       defaultValues.location = user.location;
       reset({ ...defaultValues });
     }
@@ -276,7 +279,7 @@ function EditProfile({className, profileHandle}) {
           onSave={methods.handleSubmit(onSave)}
         />}>
         <UserInfoWithCoverPic isEdit={true} profileHandle={profileHandle} />
-        <div className='relative bottom-14'>
+        <div className='relative'>
           <FormProvider {...methods}>
             <ProfileInfoForm />
           </FormProvider>

@@ -1,5 +1,7 @@
 const getProfileDataFromPeopleAPI = (token) => {
-  return fetch('https://people.googleapis.com/v1/people/me?personFields=birthdays', {
+  const isProduction = process.env.NODE_ENV !== 'production';
+  const url = isProduction ? '/demo.json' : 'https://people.googleapis.com/v1/people/me?personFields=birthdays';
+  return fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`
     }

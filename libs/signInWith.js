@@ -1,4 +1,5 @@
-import { getAuth, GoogleAuthProvider, signInWithPopup, TwitterAuthProvider } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, TwitterAuthProvider } from "firebase/auth";
+import { getFirebaseInstance } from "../hooks/useComponentWithFirebase";
 
 export const SignInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
@@ -9,7 +10,7 @@ export const SignInWithGoogle = async () => {
     'auth_type': 'reauthenticate'
   })
   try {
-    const result = await signInWithPopup(getAuth(), provider);
+    const result = await signInWithPopup(getFirebaseInstance('auth'), provider);
     return result;
   } catch (err) { 
     console.error(err);
@@ -18,7 +19,7 @@ export const SignInWithGoogle = async () => {
 export const SignInWithTwitter = async () => {
   const provider = new TwitterAuthProvider();
   try {
-    await signInWithPopup(getAuth(), provider);
+    await signInWithPopup(getFirebaseInstance('auth'), provider);
   } catch (err) {
     console.error(err);
   }

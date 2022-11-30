@@ -36,7 +36,7 @@ const SearchInput = () => {
                   )
                 }
                 src={option.photoURL}
-                onError={(e)=> e.target.src = `https://via.placeholder.com/80/AAAAAA/444444?text=${option?.name[0]?.toUpperCase()}`}
+                onError={(e)=> e.target.src = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${option?.name[0]?.toUpperCase()}`}
               />
               <div className='inline-block'>
                 <div className='leading-3'>{option.name}</div>

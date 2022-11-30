@@ -30,3 +30,9 @@ yarn-error.log*
 .env.production.local
 .firebase
 firebase-debug.log
+firestore-debug.log
+pubsub-debug.log
+.gitignore
+*.log
+emulator-data
+firebase-export-*

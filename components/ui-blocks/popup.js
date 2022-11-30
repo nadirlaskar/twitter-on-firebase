@@ -30,10 +30,7 @@ export default function Modal({ isOpen = false, onClose, children, title }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full sm:w-10/12 lg:w-4/12 lg:max-w-lg lg:min-w-max  transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 py-4 px-3"
-                  >
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                     {title}
                   </Dialog.Title>
                  {children}
