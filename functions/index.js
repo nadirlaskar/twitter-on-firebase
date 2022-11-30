@@ -168,7 +168,20 @@ const sendTweetFn = async (data, context) => {
   // Add tweet to user's tweets
   await userRef.update({
     tweets: admin.firestore.FieldValue.arrayUnion(tweetRef.id),
+    comments: replyRef && admin.firestore.FieldValue.arrayUnion(uid),
   });
+  // update comments on reply tweet
+  if (replyRef) {
+    const replyTweetRef = admin.firestore().collection("tweets").doc(replyRef);
+    const replyTweet = await replyTweetRef.get();
+    if (!replyTweet.exists) {
+      throw new functions.https.HttpsError("not-found", "Tweet not found");
+    }
+    await replyTweetRef.update({
+      comments: admin.firestore.FieldValue.arrayUnion(uid),
+      replies: admin.firestore.FieldValue.arrayUnion(tweetRef.id),
+    });
+  }
   await updateFollowersAboutTweet(user, tweetRef);
   return {message: "Tweet sent successfully"};
 };
@@ -345,7 +358,6 @@ exports.retweet = functions.https.onCall(async (tweetId, context) => {
   if (!tweet.exists) {
     throw new functions.https.HttpsError("not-found", "Tweet not found");
   }
-
 
   const tweetData = tweet.data();
 

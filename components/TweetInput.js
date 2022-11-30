@@ -5,7 +5,7 @@ import useProfile from "../hooks/useProfile";
 import { sendTweet } from "../libs/firebase.util";
 import Loading from "./ui-blocks/loading";
 
-const TweetInput = ({ MAX=60, onTweetSent}) => {
+const TweetInput = ({ MAX=60, onTweetSent, replyTo = false}) => {
   const [status, user] = useProfile('me');
   const [tweet, setTweet] = useState('');
   const tweetref = useRef(null);
@@ -45,11 +45,14 @@ const TweetInput = ({ MAX=60, onTweetSent}) => {
             <span className={classNames(
               {'hidden': tweet.length>0},
               "text-slate-600 absolute text-lg"
-            )}>What's happening?</span>
+            )}>
+              {replyTo ? "Tweet your reply" : "What's happening?"}
+            </span>
             <div className={classNames(
-              'flex mt-6 border-t py-4 justify-end items-center border-slate-200',
+              'flex mt-6 py-4 justify-end items-center border-slate-200',
               {
-                'border-none': tweet.length===0
+                'border-none': tweet.length === 0,
+                'border-t': !replyTo
               }
             )}>
               <span className={classNames(
@@ -69,7 +72,7 @@ const TweetInput = ({ MAX=60, onTweetSent}) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setSendingTweet(true);
-                  tweet.length > 0 && sendTweet(tweet).then(() => {
+                  tweet.length > 0 && sendTweet(tweet, replyTo).then(() => {
                     setTweet('')
                     if(tweetref.current) tweetref.current.innerHTML = '';
                     setSendingTweet(false);
@@ -82,7 +85,9 @@ const TweetInput = ({ MAX=60, onTweetSent}) => {
                 className={classNames(
                 "disabled:bg-slate-200",
                 "bg-sky-500 text-white rounded-full px-4 py-2 text-sm w-fit",
-              )}>Tweet</button>
+                )}>
+                  {!replyTo?"Tweet":"Reply"}
+                </button>
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ const LikeNotification = ({like}) => {
       <LikeIcon filled={true} className='w-10 h-10 mr-2 text-pink-500' />
       <div className="flex flex-col">
         <img src={userIcon} className='w-10 h-10 rounded-full mb-2'/>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-slate-700">
           <span className="font-bold mr-1 text-slate-800">{like?.name}</span> liked your tweet
         </span>
         <span className="text-sm text-slate-500 inline-block">

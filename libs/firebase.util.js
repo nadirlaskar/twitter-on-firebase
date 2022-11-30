@@ -65,10 +65,10 @@ export const loadUserProfiles = async (ids) => {
   return Object.values(data);
 }
 
-export const sendTweet = async (tweet) => {
+export const sendTweet = async (tweet, replyTo = null) => {
   const functions = getFirebaseInstance('functions');
   const sendTweet = httpsCallable(functions, 'sendTweet');
-  const result = await sendTweet({ tweet });
+  const result = await sendTweet({ tweet, replyRef: replyTo });
   return result.data;
 }
 

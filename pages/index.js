@@ -1,6 +1,7 @@
 import { XCircleIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import Head from 'next/head';
+import router from 'next/router';
 import Layout from '../components/Layout';
 import Tweet from '../components/Tweet';
 import TweetInput from '../components/TweetInput';
@@ -33,7 +34,18 @@ export default function Home() {
           {loading ? (<Loading className={'w-5 h-5 text-sky-500 !border-2'} />): "Load more tweets"}
         </div>
         {tweets.map((tweet) => (
-          <Tweet key={tweet.id} tweet={tweet} likeTweet={likeTweet} retweet={retweet} />
+          <Tweet
+            onClick={() => {
+              router.push({
+                pathname: `/${tweet.handle}/status/${tweet.id}`,
+                query: { ...router.query, retweetBy: tweet.retweetedBy?.name }
+            });
+            }}
+            key={tweet.id}
+            tweet={tweet}
+            likeTweet={likeTweet}
+            retweet={retweet}
+          />
         ))}
       </main>
     </Layout>

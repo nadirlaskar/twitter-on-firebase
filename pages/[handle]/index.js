@@ -37,7 +37,15 @@ export function Profile() {
             {loading ? (<Loading className={'w-5 h-5 text-sky-500 !border-2'} />): "Load more tweets"}
           </div>
           {tweets.map((tweet) => (
-            <Tweet key={tweet.id} tweet={tweet} likeTweet={likeTweet} retweet={retweet} />
+            <Tweet
+              onClick={() => {
+                router.push(`/${tweet.handle}/status/${tweet.id}`);
+              }}
+              key={tweet.id}
+              tweet={tweet}
+              likeTweet={likeTweet}
+              retweet={retweet}
+            />
           ))}
           { noTweets && (
             <div className={classNames('flex flex-col justify-end items-center w-fit h-2/4 text-slate-500 text-sm p-12 m-auto text-center')}>
