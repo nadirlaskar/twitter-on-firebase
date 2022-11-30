@@ -1,5 +1,5 @@
-import Layout from "../../components/Layout"
-import RightSidebar from "../../components/RightSidebar"
+import Layout from "../components/Layout"
+import RightSidebar from "../components/RightSidebar"
 
 export default () => { 
   return (

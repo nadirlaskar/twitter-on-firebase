@@ -3,12 +3,12 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Layout from "../../../components/Layout";
-import { FollowButton, ProfileTitle } from "../../../components/ProfileHeader";
-import Loading from "../../../components/ui-blocks/loading";
-import useComponentWithFirebase from "../../../hooks/useComponentWithFirebase";
-import useProfile from "../../../hooks/useProfile";
-import { loadUserProfiles } from "../../../libs/firebase.util";
+import Layout from "../../components/Layout";
+import { FollowButton, ProfileTitle } from "../../components/ProfileHeader";
+import Loading from "../../components/ui-blocks/loading";
+import useComponentWithFirebase from "../../hooks/useComponentWithFirebase";
+import useProfile from "../../hooks/useProfile";
+import { loadUserProfiles } from "../../libs/firebase.util";
 
 function toPascleCase(text) {
   return text[0].toUpperCase() + text.slice(1);
@@ -46,7 +46,7 @@ const Tabs = ({ tabs, active, setActiveTab }) => {
 
 const FollowList = () => {
   const router = useRouter()
-  const { username: profileHandle, tab:activeTab } = router.query;
+  const { handle: profileHandle, tab:activeTab } = router.query;
   const title = profileHandle?`${profileHandle}'s ${activeTab}`:`loading`;
   const [_, loggedInUser] =  useProfile('me')
   const [profileStatus, profile] = useProfile(profileHandle);
@@ -83,7 +83,7 @@ const FollowList = () => {
             const initial = profile?.name.split(' ').map((n) => n[0]).join('')
             const fallback = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${initial.toUpperCase()}`
             return (
-              <Link key={profile.id} href={`/profile/${profile.handle}`}>
+              <Link key={profile.id} href={`/${profile.handle}`}>
                 <div key={profile.handle} className={'flex items-start p-2 hover:bg-slate-100 justify-between'}>
                   <div className={'flex items-start'}>
                     <img width={48} height={48} src={profile.photoURL || fallback} className={'rounded-full mr-2'} onError={(e) => {

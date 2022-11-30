@@ -42,12 +42,12 @@ const ProfileDetails = ({profileHandle='me'}) => {
         )}
       </div>
       <div className='flex space-x-4 text-sm mt-4 text-black'>
-        <Link href={`/u/${profileData?.handle}/follow?tab=following`}>
+        <Link href={`/${profileData?.handle}/follow?tab=following`}>
           <div className='hover:underline'>
             <span className='font-bold'>{profileData?.following?.length || 0}</span> <span className='text-slate-500'>Following</span>
           </div>
         </Link>
-        <Link href={`/u/${profileData?.handle}/follow?tab=followers`}>
+        <Link href={`/${profileData?.handle}/follow?tab=followers`}>
           <div className='hover:underline'>
             <span className='font-bold'>{profileData?.followers?.length || 0}</span> <span className='text-slate-500'>Followers</span>
           </div>

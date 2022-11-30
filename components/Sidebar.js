@@ -34,7 +34,7 @@ const Sidebar = ({ page }) => {
               <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'home' })}>Home</span>
             </li>
             </Link>
-            <Link href='/u/search'>
+            <Link href='/search'>
             <li className={classNames(listItemStyle, 'hover:bg-slate-100 lg:hidden relative')}>
               <MagnifyingGlassIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
             </li>
@@ -44,11 +44,13 @@ const Sidebar = ({ page }) => {
               {page === 'follower' && <span className={activeStyle} />}
               <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'follower' })}>Explore</span>
             </li>
-            <li className={classNames(listItemStyle, 'hover:bg-slate-100 relative' , { 'hidden': !signInCheckResult.signedIn })}>
-              <BellIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
-              {page === 'following' && <span className={activeStyle} />}
-              <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'following' })}>Notification</span>
-            </li>
+            <Link href={`/notification`}>
+              <li className={classNames(listItemStyle, 'hover:bg-slate-100 relative' , { 'hidden': !signInCheckResult.signedIn })}>
+                <BellIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
+                {page === 'following' && <span className={activeStyle} />}
+                <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'following' })}>Notification</span>
+              </li>
+            </Link>
             <Link href='/me'>
               <li className={classNames(listItemStyle, 'hover:bg-slate-100 relative',{ 'hidden': !signInCheckResult.signedIn })}>
                 <UserCircleIcon className='inline-block lg:mr-4 w-5 md:w-6'  />

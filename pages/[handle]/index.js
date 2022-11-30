@@ -5,11 +5,11 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Layout from "../../components/Layout";
 import ProfileHeader from "../../components/ProfileHeader";
+import { Tweet } from "../../components/Tweet";
 import Loading from "../../components/ui-blocks/loading";
 import useComponentWithFirebase from "../../hooks/useComponentWithFirebase";
 import useProfile from "../../hooks/useProfile";
 import useTweets from "../../hooks/useTweets";
-import { Tweet } from "../index";
 
 export function Profile() {
   const router = useRouter()
@@ -17,7 +17,7 @@ export function Profile() {
   const [_status, user] = useProfile('me');
   useEffect(() => { 
     if (user && profileHandle === 'me') {
-      router.replace('/profile/'+handle)
+      router.replace('/'+handle)
     }
   }, [user])
   const handle = profileHandle === 'me' ? user?.handle : profileHandle

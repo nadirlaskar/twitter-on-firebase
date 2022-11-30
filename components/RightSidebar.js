@@ -20,7 +20,7 @@ const SearchInput = () => {
       <MagnifyingGlassIcon className="w-6 h-6 mr-1  hover:text-sky-600"/>
       <AutoComplete
         setSelected={(selected) => { 
-          push(`/profile/${selected?.handle}`);
+          push(`/${selected?.handle}`);
         }}
         options={searchResults}
         rootStyles={'!static w-full'}
