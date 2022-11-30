@@ -53,7 +53,7 @@ const FollowList = () => {
   const [profilesStatus, setProfileStatus] = useState('loading');
   const [profiles, setProfiles] = useState([]);
   useEffect(() => {
-    if (profile && (activeTab === 'followers' || activeTab === 'following') && profile[activeTab] && profile[activeTab].length > 0) {
+    if (profile && (activeTab === 'followers' || activeTab === 'following') && profile[activeTab] && profile[activeTab]?.length > 0) {
       loadUserProfiles(profile[activeTab]).then((profiles) => {
         setProfiles(profiles);
         setProfileStatus('success');
@@ -78,7 +78,7 @@ const FollowList = () => {
       {(profileStatus === 'loading' || profilesStatus === 'loading') && <Loading className={'m-12 w-8 h-8 text-sky-600'} />}
       {profileStatus === 'success' && (
         <div className={'mt-4 h-full w-full'}>
-          {profiles.length === 0 && (<div className="text-slate-400 text-center w-full h-1/4 flex items-center justify-center">{`No ${activeTab} yet`}</div>)}
+          {profiles?.length === 0 && (<div className="text-slate-400 text-center w-full h-1/4 flex items-center justify-center">{`No ${activeTab} yet`}</div>)}
           {profiles?.map((profile) => {
             const initial = profile?.name.split(' ').map((n) => n[0]).join('')
             const fallback = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${initial.toUpperCase()}`

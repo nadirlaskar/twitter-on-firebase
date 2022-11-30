@@ -10,7 +10,7 @@ import useTweets from '../hooks/useTweets';
 
 export default function Home() {
   const { tweets, loading, error, refresh, likeTweet, retweet } = useTweets();
-  const noTweets = tweets.length === 0 && !loading;
+  const noTweets = tweets?.length === 0 && !loading;
   console.log('Tweets', tweets);
   return (
     <Layout page={'home'}>

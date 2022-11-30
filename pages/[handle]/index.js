@@ -22,7 +22,7 @@ export function Profile() {
   }, [user])
   const handle = profileHandle === 'me' ? user?.handle : profileHandle
   const { tweets, loading, error, refresh, likeTweet, retweet } = useTweets(handle);
-  const noTweets = tweets.length === 0 && !loading;
+  const noTweets = tweets?.length === 0 && !loading;
   const isMyProfile = user?.handle === handle || profileHandle === 'me';
   return (
     <Layout page={'profile'}>

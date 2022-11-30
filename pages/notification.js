@@ -63,7 +63,7 @@ const NotificationList = () => {
       {(profileStatus === 'loading' || notificationStatus === 'loading') && <Loading className={'m-12 w-8 h-8 text-sky-600'} />}
       {profileStatus === 'success' && (
         <div className={'mt-4 h-full w-full'}>
-          {notifications.length === 0 && (
+          {notifications?.length === 0 && (
             <div className="text-slate-400 text-center w-full h-1/4 flex items-center justify-center">{`No ${activeTab} yet`}</div>
           )}
           {notifications[activeTab]?.map((notification) => {

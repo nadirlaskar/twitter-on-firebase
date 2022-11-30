@@ -43,7 +43,7 @@ const TweetInput = ({ MAX=60, onTweetSent, replyTo = false}) => {
               }}
             />
             <span className={classNames(
-              {'hidden': tweet.length>0},
+              {'hidden': tweet?.length>0},
               "text-slate-600 absolute text-lg"
             )}>
               {replyTo ? "Tweet your reply" : "What's happening?"}
@@ -51,28 +51,28 @@ const TweetInput = ({ MAX=60, onTweetSent, replyTo = false}) => {
             <div className={classNames(
               'flex mt-6 py-4 justify-end items-center border-slate-200',
               {
-                'border-none': tweet.length === 0,
+                'border-none': tweet?.length === 0,
                 'border-t': !replyTo
               }
             )}>
               <span className={classNames(
                 {
-                  'text-red-600': tweet.length > MAX,
-                  'text-green-500': tweet.length <= MAX
+                  'text-red-600': tweet?.length > MAX,
+                  'text-green-500': tweet?.length <= MAX
                 },
                 "inline-block text-sm text-slate-400"
-              )}>{MAX-tweet.length}</span><span className="inline-block mr-2 text-sm text-slate-400">{'\u00A0'}/ {MAX}</span>
+              )}>{MAX-tweet?.length}</span><span className="inline-block mr-2 text-sm text-slate-400">{'\u00A0'}/ {MAX}</span>
               <button
                 disabled={
-                  tweet.length > MAX
-                  || tweet.length === 0
+                  tweet?.length > MAX
+                  || tweet?.length === 0
                   || sendingTweet
                 }
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setSendingTweet(true);
-                  tweet.length > 0 && sendTweet(tweet, replyTo).then(() => {
+                  tweet?.length > 0 && sendTweet(tweet, replyTo).then(() => {
                     setTweet('')
                     if(tweetref.current) tweetref.current.innerHTML = '';
                     setSendingTweet(false);
