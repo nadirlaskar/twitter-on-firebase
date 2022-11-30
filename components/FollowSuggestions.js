@@ -1,4 +1,5 @@
 import router from "next/router";
+import useComponentWithFirebase from "../hooks/useComponentWithFirebase";
 import useFollowSuggestions from "../hooks/useFollowSuggestions";
 import { ShowUserInfo } from "./Authenticate";
 import { FollowButton } from "./ProfileHeader";
@@ -36,4 +37,7 @@ const FollowSuggestions = () => {
   )
 
 }
-export default FollowSuggestions;
+export default (props) => {
+  const WithAuth = (innerProps) => useComponentWithFirebase('auth', FollowSuggestions, innerProps);
+  return useComponentWithFirebase('firestore', WithAuth, props);
+};
