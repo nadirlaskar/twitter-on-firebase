@@ -50,7 +50,7 @@ const useNotifications = () =>{
     idField: 'id',
   });
   useEffect(() => {
-    if (notificationsDataStatus === 'success') {
+    if (notificationsDataStatus === 'success' && notificationsData) {
       notificationsData.likes = notificationsData?.likes?.map(like => ({
         ...like,
         action: <LikeNotification like={like} />,
