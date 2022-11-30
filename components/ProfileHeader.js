@@ -119,7 +119,7 @@ const ProfileHeader = ({ profileHandle, allowEdit = false, showFollowButton = fa
       <ProfileTitle profileHandle={profileHandle} showTweetCount={true} />
       <section className='w-full border relative pb-4'>
         <UserInfoWithCoverPic profileHandle={profileHandle} />
-        {allowEdit && <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-48 mt-6'} />}
+        {allowEdit && <EditProfileButton profileHandle={profileHandle} className={'absolute right-2 top-22 md:top-48 mt-6'} />}
         {_showFollowButton && profileHandle && <FollowButton profileHandle={profileHandle}  className={'absolute right-2 top-48 mt-6'} />}
         <ProfileDetails profileHandle={profileHandle} />
       </section>
