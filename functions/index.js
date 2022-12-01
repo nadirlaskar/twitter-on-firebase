@@ -67,6 +67,42 @@ const fetchUserFromFireStoreByHandle = async (handle) => {
   return {ref, data};
 };
 
+const addTweetsToFollowersTimeline = async (uid, followingData) => {
+  const tweetsRef = admin.firestore().collection("tweets");
+  const q = tweetsRef.where("uid", "==", followingData.id);
+  const querySnapshot = await q.get();
+  if (!querySnapshot.empty) {
+    const tweets = querySnapshot.docs.map((doc) => doc.id);
+    const timelineRef = admin.firestore().collection("notifications").doc(uid);
+    const timeline = await timelineRef.get();
+    if (timeline.exists) {
+      await timelineRef.update({
+        tweets: admin.firestore.FieldValue.arrayUnion(...tweets),
+      });
+    } else {
+      await timelineRef.set({
+        tweets: admin.firestore.FieldValue.arrayUnion(...tweets),
+      });
+    }
+  }
+};
+
+const removeTweetsFromFollowersTimeline = async (uid, followingData) => {
+  const tweetsRef = admin.firestore().collection("tweets");
+  const q = tweetsRef.where("uid", "==", followingData.id);
+  const querySnapshot = await q.get();
+  if (!querySnapshot.empty) {
+    const tweets = querySnapshot.docs.map((doc) => doc.id);
+    const timelineRef = admin.firestore().collection("notifications").doc(uid);
+    const timeline = await timelineRef.get();
+    if (timeline.exists) {
+      await timelineRef.update({
+        tweets: admin.firestore.FieldValue.arrayRemove(...tweets),
+      });
+    }
+  }
+};
+
 exports.followUser = functions.https.onCall(async (handle, context) => {
   const uid = context.auth.uid;
   const followerRef = admin.firestore().collection("users").doc(uid);
@@ -79,7 +115,7 @@ exports.followUser = functions.https.onCall(async (handle, context) => {
     data: followingData,
   } = await fetchUserFromFireStoreByHandle(handle);
   const followingList = followingData.following;
-  if (followingList.includes(followingData.id)) {
+  if (followingList.includes(uid)) {
     throw new functions
         .https
         .HttpsError("already-exists", "User already followed");
@@ -90,6 +126,10 @@ exports.followUser = functions.https.onCall(async (handle, context) => {
   await followingRef.update({
     followers: admin.firestore.FieldValue.arrayUnion(follower.id),
   });
+
+  // Add tweets to follower's timeline
+  await addTweetsToFollowersTimeline(uid, followingData);
+
   return {message: "User followed successfully"};
 });
 
@@ -116,6 +156,8 @@ exports.unfollowUser = functions.https.onCall(async (handle, context) => {
   await followingRef.update({
     followers: admin.firestore.FieldValue.arrayRemove(uid),
   });
+  // Add tweets to follower's timeline
+  await removeTweetsFromFollowersTimeline(uid, followingData);
   return {message: "User unfollowed successfully"};
 });
 
@@ -258,6 +300,8 @@ exports.getProfileTweets = functions.https.onCall(async (handle, context) => {
     if (!user.exists) {
       throw new functions.https.HttpsError("not-found", "User not found");
     }
+  } else {
+    return [];
   }
   if (handle === "me") {
     handle = user.data().handle;
@@ -275,7 +319,6 @@ exports.getProfileTweets = functions.https.onCall(async (handle, context) => {
     }
     const tweetSnapshot = await tweetsRef.doc(tweet).get();
     const tweetData = tweetSnapshot.data();
-    console.log(retweetedBy);
     if (retweetedBy) {
       tweetData.retweetedBy = retweetedBy.data;
       if (tweetData.retweetedBy.uid === uid) {
