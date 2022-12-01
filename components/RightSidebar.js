@@ -24,28 +24,35 @@ const SearchInput = () => {
           push(`/${selected?.handle}`);
         }}
         options={searchResults}
-        rootStyles={'!static w-full'}
+        rootStyles={'!static w-full z-40'}
         renderValue={(option) => option?`${option?.name}`:''}
-        renderOption={(option) => (
-          <div className='flex flex-row items-center justify-between w-full'>
-            <div className='flex flex-row items-center justify-start'>
-              <img width={40} height={40}
-                className={
-                  classNames(
-                    'rounded-full', 'inline-block',
-                    { "mr-2 my-4": true }
-                  )
-                }
-                src={option.photoURL}
-                onError={(e)=> e.target.src = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${option?.name[0]?.toUpperCase()}`}
-              />
-              <div className='inline-block'>
-                <div className='leading-3'>{option.name}</div>
-                <div className='text-sm text-slate-500'>@{option.handle}</div>
+        renderOption={(option) => {
+          const fallback = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${option?.name[0]?.toUpperCase()}`;
+          const image = option.photoURL || fallback
+          return (
+            <div className='flex flex-row items-center justify-between w-full'>
+              <div className='flex flex-row items-center justify-start'>
+                <img width={40} height={40}
+                  className={
+                    classNames(
+                      'rounded-full', 'inline-block',
+                      { "mr-2 my-4": true }
+                    )
+                  }
+                  src={image}
+                  onError={(e) => {
+                    e.target.error = null;
+                    e.target.src = fallback;
+                  }}
+                />
+                <div className='inline-block'>
+                  <div className='leading-3'>{option.name}</div>
+                  <div className='text-sm text-slate-500'>@{option.handle}</div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        }}
                 
         setQuery={(q) => {
           console.log('setQuery', q)
