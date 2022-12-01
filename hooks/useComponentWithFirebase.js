@@ -52,7 +52,6 @@ export const getFirebaseInstance = (firebaseType, app) => {
   if (env !== 'production' && typeof window !== 'undefined') {
     const { connector, port} = emulatorFetcherMap[firebaseType];
     const isSetup = window[`emulatorSetup${firebaseType}`] !== 'true';
-    console.log('isSetup', isSetup);
     if (isSetup) {
       console.log('connecting to emulator', firebaseType, port);
       if (firebaseType === 'auth') connector(instanceFetcherMap[firebaseType](app), 'http://localhost:' + port);

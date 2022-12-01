@@ -1,5 +1,6 @@
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
+import { doc, getDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import CommentIcon from '../components/icons/Comment';
@@ -34,10 +35,52 @@ const getReadableTime = (timestamp) => {
   }
 };
 
+import { useRouter } from 'next/router';
+import { useMemo } from "react";
+import Loading from "../components/ui-blocks/loading";
+import useTweet from "../hooks/useTweet";
 
-export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className, allowComment = true, onCommentClick }) => {
+
+export const TweetItem = ({className, tweetId, showReplies=false, retweetBy, showReplyTo, onClick }) => { 
+  const { tweet, likeTweet, retweet, loading } = useTweet(tweetId);
+  if (retweetBy && !tweet?.retweetedBy && tweet) {
+    tweet.retweetedBy = { name: retweetBy }
+  }
+  const replies = useMemo(() => (
+    showReplies&&tweet?.replies?.map((reply) => {
+        return (
+          <>
+            <TweetItem
+              tweetId={reply}
+              showReplies={false}
+              isReply={true}
+            />
+          </>
+        )
+      })
+  ), [showReplies, tweet?.replies, tweet?.handle]);
+  return (
+    <div onClick={onClick}>
+      {tweet && (
+        <Tweet
+          tweet={tweet}
+          likeTweet={likeTweet}
+          retweet={retweet}
+          showReplyTo={showReplyTo}
+          className={className}
+        />
+      )}
+      {loading && <Loading className={'text-sky-400 w-4 h-4 p-4'} />}
+      {replies}
+    </div>
+  );
+}
+
+
+export const Tweet = ({ tweet, likeTweet, retweet, readonly, className, showReplyTo = false }) => {
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [isLikedByMe, setLike] = useState(tweet.isLikedByMe);
+  const router = useRouter();
   useEffect(() => {
     setLike(tweet.isLikedByMe??false);
   }, [tweet.isLikedByMe]);
@@ -48,35 +91,54 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className,
   const readableTime = getReadableTime(tweet.timestamp);
   const fallbackurl = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${tweet.name?.split(' ').map((n) => n[0]).join('').toUpperCase()}`;
   const isLoggedIn = getFirebaseInstance('auth').currentUser !== null;
+  const [replyTo, setReplyTo] = useState(null);
+  useEffect(() => {
+    if (tweet?.replyRef && showReplyTo) {
+      const db = getFirebaseInstance('firestore');
+      getDoc(doc(db, 'tweets', tweet.replyRef)).then((doc) => {
+        if (doc.exists()) {
+          setReplyTo(doc.data());
+        }
+      });
+    }
+  }, [tweet?.replyRef, showReplyTo]);
   return (
-    <div onClick={onClick} className={classNames(
+  <>
+    <div>
+      {replyTo && <>
+        <TweetItem tweetId={tweet?.replyRef} showReplies={false} showReplyTo={false}  className='!border-none' />
+        <div className='text-sm pl-9 ml-9 h-14 border-l-2 flex items-center -mt-12 text-slate-500'/>
+      </>}
+    </div>
+    {!readonly && (
+      <Modal
+        isOpen={showCommentModal}
+        onClose={() => setShowCommentModal(false)}
+        title={
+          <div className='mt-2 mx-2' onClick={() => { 
+            setShowCommentModal(false);
+          }}>
+            <XMarkIcon className='w-9 h-9 text-slate-500 hover:bg-slate-100 p-2 rounded-full' />
+          </div>
+        }>
+        <div className='flex flex-col'>
+          <Tweet tweet={tweet} readonly={true} className='!border-none' />
+          <div className='text-sm pl-9 ml-9 h-14 border-l-2 flex items-center -mt-3 text-slate-500'>
+            Replying to <span className='text-sky-400 ml-1'> @{tweet.handle}</span>
+          </div>
+          <div className='mx-1'>
+            <TweetInput replyTo={tweet.id} onTweetSent={() => {
+              setShowCommentModal(false);
+            }} />
+          </div>
+        </div>
+      </Modal>
+    )}
+    <div onClick={() => { router.push(`/${tweet.handle}/status/${tweet.id}`); }}
+      className={classNames(
       'flex flex-col border-b border-slate-200 hover:bg-slate-100/60',
       className
     )}>
-      {!readonly && (
-        <Modal
-          isOpen={showCommentModal}
-          onClose={() => setShowCommentModal(false)}
-          title={
-            <div className='mt-2 mx-2' onClick={() => { 
-              setShowCommentModal(false);
-            }}>
-              <XMarkIcon className='w-9 h-9 text-slate-500 hover:bg-slate-100 p-2 rounded-full' />
-            </div>
-          }>
-          <div className='flex flex-col'>
-            <Tweet tweet={tweet} readonly={true} className='!border-none' />
-            <div className='text-sm pl-9 ml-9 h-14 border-l-2 flex items-center -mt-3 text-slate-500'>
-              Replying to <span className='text-sky-400 ml-1'> @{tweet.handle}</span>
-            </div>
-            <div className='mx-1'>
-              <TweetInput replyTo={tweet.id} onTweetSent={() => {
-                setShowCommentModal(false);
-              }} />
-            </div>
-          </div>
-        </Modal>
-      )}
       {tweet.retweetedBy && (
         <div className='flex pt-4 px-2 items-center w-full text-sm text-slate-500 font-semibold ml-8'>
           <RetweetIcon className={'w-4 h-4 mr-2'}/>
@@ -98,6 +160,16 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className,
             <span className='text-slate-500 text-sm'>@{tweet.handle} · </span>
             <span className='text-slate-500 text-sm'>{readableTime}</span>
           </div>
+          {replyTo && (
+            <div className='flex my-2 items-center w-full text-sm text-slate-500'>
+              Replying to
+              <Link href={`/${replyTo.handle}`}>
+                <span className='text-sky-400 hover:underline ml-1'>
+                    @{replyTo?.handle}
+                </span>
+              </Link>
+            </div>
+          )}
           <div className='text-slate-900 text-md'>
             <p>{tweet.tweet}</p>
           </div>
@@ -106,9 +178,9 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className,
               <button
                 disabled={!isLoggedIn}
                 onClick={(e) => { 
+                  e.preventDefault();
                   e.stopPropagation();
-                  if (allowComment) setShowCommentModal(true);
-                  else if(onCommentClick) onCommentClick(tweet.id);
+                  setShowCommentModal(true);
                 }}
                 className={classNames(
                 'disabled:text-slate-300 disabled:cursor-not-allowed disabled:pointer-events-none',
@@ -171,7 +243,7 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className,
         </div>
       </div>
     </div>
-  )
+  </>)
 }
 
 export default Tweet;

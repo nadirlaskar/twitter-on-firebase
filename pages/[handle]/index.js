@@ -45,6 +45,7 @@ export function Profile() {
               tweet={tweet}
               likeTweet={likeTweet}
               retweet={retweet}
+              showReplyTo={true}
             />
           ))}
           { noTweets && (
