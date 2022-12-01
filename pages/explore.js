@@ -2,32 +2,24 @@ import { XCircleIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import Head from 'next/head';
 import router from 'next/router';
-import { useEffect } from 'react';
 import Layout from '../components/Layout';
 import Tweet from '../components/Tweet';
 import TweetInput from '../components/TweetInput';
 import Loading from '../components/ui-blocks/loading';
-import { getFirebaseInstance } from '../hooks/useComponentWithFirebase';
 import useTweets from '../hooks/useTweets';
 
-export default function Home() {
-  const { tweets, loading, error, refresh, likeTweet, retweet } = useTweets();
+export default function Explore() {
+  const { tweets, loading, error, refresh, likeTweet, retweet } = useTweets('explore');
   const noTweets = tweets?.length === 0 && !loading;
-  useEffect(() => { 
-    return getFirebaseInstance('auth').onAuthStateChanged((user) => {
-      if (!user) {
-        router.push('/explore');
-      }
-    });
-  }, []);
+  console.log('Tweets', tweets);
   return (
-    <Layout page={'home'}>
+    <Layout page={'explore'}>
       <Head>
-        <title>Home</title>
+        <title>Explore</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className='h-full relative'>
-        <h1 className='text-xl mt-2 text-sky-500 font-semibold p-2 ml-4'>Home</h1>
+        <h1 className='text-xl mt-2 text-sky-500 font-semibold p-2 ml-4'>Explore</h1>
         <div className='ml-2 mt-2 mr-2 hidden sm:block'>
           <TweetInput />
         </div>

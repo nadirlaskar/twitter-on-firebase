@@ -22,13 +22,17 @@ const TweetTitle = (props) => {
 const Sidebar = ({ page }) => {
   const { status, data: signInCheckResult } = useSigninCheck();
   const [isTweetModalOpen, setTweetModalOpen] = useState(false);
+  const isLoggedIn = status === 'success' && signInCheckResult.signedIn;
   return (
     <div className='flex flex-col h-full relative'>
       <ul className='my-4 h-full min-w-max'>
         { status === 'success' && (
           <>
             <Link href='/'>
-            <li className={classNames(listItemStyle, 'hover:bg-slate-100 relative')}>
+              <li className={classNames(listItemStyle,
+                { 'hidden': !isLoggedIn},
+                'hover:bg-slate-100 relative'
+              )}>
               <HomeIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
               {page === 'home' && <span className={activeStyle} />}
               <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'home' })}>Home</span>
@@ -39,11 +43,13 @@ const Sidebar = ({ page }) => {
               <MagnifyingGlassIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
             </li>
             </Link>
-             <li className={classNames(listItemStyle, 'hover:bg-slate-100 relative')}>
-              <TwitterHashtagIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
-              {page === 'follower' && <span className={activeStyle} />}
-              <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'follower' })}>Explore</span>
-            </li>
+            <Link href={`/explore`}>
+              <li className={classNames(listItemStyle, 'relative')}>
+                <TwitterHashtagIcon className='inline-block lg:mr-4 w-5 md:w-6'  />
+                {page === 'explore' && <span className={activeStyle} />}
+                <span className={classNames(`text-xl hidden lg:inline`, { 'font-semibold': page === 'follower' })}>Explore</span>
+              </li>
+            </Link>
             <Link href={`/notification`}>
               <li className={classNames(listItemStyle, 'hover:bg-slate-100 relative' , { 'hidden': !signInCheckResult.signedIn })}>
                 <BellIcon className='inline-block lg:mr-4 w-5 md:w-6'  />

@@ -27,11 +27,36 @@ const addUserToFireStore = (user) => {
       });
 };
 
-const deleteUserFromFireStore = (user) => {
-  return admin.firestore()
+const deleteUserFromFireStore = async (user) => {
+  await admin.firestore()
       .collection("users")
       .doc(user.uid)
       .delete();
+  // delete followers and following
+  const followers = user.data().followers;
+  const following = user.data().following;
+  const batch = admin.firestore().batch();
+  await Promise.all(followers.map(async (follower) => {
+    const followerRef = admin.firestore().collection("users").doc(follower);
+    const followerDoc = await followerRef.get();
+    const following = followerDoc.data().following;
+    const index = following.indexOf(user.uid);
+    if (index > -1) {
+      following.splice(index, 1);
+    }
+    batch.update(followerRef, {following: following});
+  }));
+  await Promise.all(following.map(async (follow) => {
+    const followRef = admin.firestore().collection("users").doc(follow);
+    const followDoc = await followRef.get();
+    const followers = followDoc.data().followers;
+    const index = followers.indexOf(user.uid);
+    if (index > -1) {
+      followers.splice(index, 1);
+    }
+    batch.update(followRef, {followers: followers});
+  }));
+  await batch.commit();
 };
 
 exports.createUserListener = functions.auth.user().onCreate(addUserToFireStore);
@@ -438,4 +463,22 @@ exports.retweet = functions.https.onCall(async (tweetId, context) => {
   updatedTweetData.isRetweetedByMe = updatedTweetData.retweets.includes(uid);
   updatedTweetData.isLikedByMe = updatedTweetData.likes.includes(uid);
   return updatedTweetData;
+});
+
+exports.getExploreTweets = functions.https.onCall(async (_, context) => {
+  const uid = context&&context.auth&&context.auth.uid;
+  const tweetsRef = admin.firestore().collection("tweets");
+  const tweets = await tweetsRef.orderBy("timestamp", "desc").get();
+  const exploreTweets = [];
+  await Promise.all(
+      tweets.docs.map(async (tweet) => {
+        const tweetData = tweet.data();
+        if (uid) {
+          tweetData.isLikedByMe = tweetData.likes.includes(uid);
+          tweetData.isRetweetedByMe = tweetData.retweets.includes(uid);
+        }
+        exploreTweets.push(tweetData);
+      }),
+  );
+  return exploreTweets;
 });

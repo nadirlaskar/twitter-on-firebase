@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import CommentIcon from '../components/icons/Comment';
 import LikeIcon from '../components/icons/Like';
 import RetweetIcon from '../components/icons/Retweet';
+import { getFirebaseInstance } from '../hooks/useComponentWithFirebase';
 import TweetInput from './TweetInput';
 import Modal from './ui-blocks/popup';
 
@@ -46,6 +47,7 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className 
   }, [tweet.isRetweetedByMe]);
   const readableTime = getReadableTime(tweet.timestamp);
   const fallbackurl = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${tweet.name?.split(' ').map((n) => n[0]).join('').toUpperCase()}`;
+  const isLoggedIn = getFirebaseInstance('auth').currentUser !== null;
   return (
     <div onClick={onClick} className={classNames(
       'flex flex-col border-b border-slate-200 hover:bg-slate-100/60',
@@ -101,23 +103,26 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className 
           </div>
           {!readonly&&(
             <div className='flex items-center justify-between mt-2 relative -left-2'>
-              <button className={classNames(
+              <button
+                disabled={!isLoggedIn}
+                onClick={(e) => { 
+                  e.stopPropagation();
+                  setShowCommentModal(true);
+                }}
+                className={classNames(
+                'disabled:text-slate-300 disabled:cursor-not-allowed disabled:pointer-events-none',
                 'flex items-center text-slate-500 hover:text-sky-400 group text-sm',
                 {
                   '!text-sky-400': tweet.isCommentedByMe
                 }
               )}>
               <CommentIcon
-                onClick={(e) => { 
-                  e.stopPropagation();
-                  setShowCommentModal(true);
-                }}
                 className='w-9 h-9 p-2 rounded-full group-hover:bg-sky-500/10 mr-2'
               />
               <span>{tweet.comments?.length || ''}</span>
             </button>
               <button
-              disabled={tweet.isRetweetedByMe !== isRetweetedByMe}
+              disabled={tweet.isRetweetedByMe !== isRetweetedByMe || !isLoggedIn}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -125,6 +130,7 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className 
                 retweet(tweet.id)
               }}
               className={classNames(
+                'disabled:text-slate-300 disabled:cursor-not-allowed disabled:pointer-events-none',
                 'flex items-center text-slate-500 hover:text-green-400 ml-4 group text-sm',
                 {
                   'text-green-400': tweet.isRetweetedByMe,
@@ -135,7 +141,7 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className 
               <span>{tweet.retweets?.length || ''}</span>
             </button>
               <button
-              disabled={tweet.isLikedByMe !== isLikedByMe}
+              disabled={tweet.isLikedByMe !== isLikedByMe || !isLoggedIn}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -143,6 +149,7 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className 
                 likeTweet(tweet.id);
               }}
               className={classNames(
+                'disabled:text-slate-300 disabled:cursor-not-allowed disabled:pointer-events-none',
                 'flex items-center text-slate-500 hover:text-pink-500 ml-4 group text-sm',
                 {
                   'text-pink-500': isLikedByMe,

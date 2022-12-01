@@ -101,3 +101,10 @@ export const retweet = async (tweetId) => {
   const result = await retweet(tweetId);
   return result.data;
 }
+
+export const getExploreTweets = async () => {
+  const functions = getFirebaseInstance('functions');
+  const getExploreTweets = httpsCallable(functions, 'getExploreTweets');
+  const result = await getExploreTweets();
+  return result;
+}

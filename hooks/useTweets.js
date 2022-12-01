@@ -1,7 +1,7 @@
 import { getFirebaseInstance } from "./useComponentWithFirebase";
 
 const { useEffect, useCallback, useState } = require("react");
-const { getHomeTweets, likeTweet, getProfileTweets, retweet } = require("../libs/firebase.util");
+const { getHomeTweets, likeTweet, getProfileTweets, retweet, getExploreTweets } = require("../libs/firebase.util");
 
 const useTweets = (handle) => { 
   // fetch notifications from firebase functions
@@ -53,7 +53,16 @@ const useTweets = (handle) => {
   const refresh = useCallback(() => {
     setLoading(true);
     setError(null);
-    if (handle) {
+    if (handle === 'explore') { 
+      getExploreTweets().then((tweets) => {
+        const tweetsData = tweets.data;
+        setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds - a.timestamp?._seconds));
+      }).catch((err) => {
+        setError(err);
+      }).finally(() => {
+        setLoading(false);
+      });
+    } else if (handle) {
       getProfileTweets(handle).then((tweets) => {
         const tweetsData = tweets.data;
         setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds -  a.timestamp?._seconds));
@@ -62,7 +71,7 @@ const useTweets = (handle) => {
       }).finally(() => {
         setLoading(false);
       });
-    } else {
+    } else  {
       return getHomeTweets().then((tweets) => {
         let tweetsData = tweets.data;
         setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds -  a.timestamp?._seconds));
