@@ -300,8 +300,6 @@ exports.getProfileTweets = functions.https.onCall(async (handle, context) => {
     if (!user.exists) {
       throw new functions.https.HttpsError("not-found", "User not found");
     }
-  } else {
-    return [];
   }
   if (handle === "me") {
     handle = user.data().handle;
