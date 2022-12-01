@@ -13,12 +13,12 @@ const useFollowSuggestions = () => {
     idField: 'id',
   });
   useEffect(() => {
-    if (userDataStatus === 'success' && userData) {
+    if (userDataStatus === 'success') {
       const ref = collection(firestore, 'users');
-      const q = query(ref, where('id', '!=', userData.id));
+      const q = userData?.id ? query(ref, where('id', '!=', userData.id)) : query(ref);
       getDocs(q).then((snapshot) => {
         let data = snapshot.docs.map((doc) => doc.data());
-        data = data.filter((user) => !userData.following.includes(user.id));
+        data = data.filter((user) => !userData?.following.includes(user.id));
         setSuggestions(data);
         setLoadingSuggestions(false);
       });
