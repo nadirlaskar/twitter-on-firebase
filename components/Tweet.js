@@ -145,15 +145,17 @@ export const Tweet = ({ tweet, likeTweet, retweet, readonly, className, showRepl
           {tweet.retweetedBy?.name} retweeted
         </div>
       )}
-      <div className='flex items-start p-3 w-full'>
-        <img className='w-12 h-12 rounded-full mr-3' src={tweet.photoURL||fallbackurl} alt='avatar' onError={
-          (e) => {
-            e.target.onerror = null;
-            e.target.src = fallbackurl;
-          }
-        }/>
+        <div className='flex items-start p-3 w-full'>
+          <Link href={'/'+tweet.handle}>
+            <img onClick={e=>e.stopPropagation()} className='w-12 h-12 rounded-full mr-3' src={tweet.photoURL||fallbackurl} alt='avatar' onError={
+              (e) => {
+                e.target.onerror = null;
+                e.target.src = fallbackurl;
+              }
+            } />
+          </Link>
         <div className='pr-2 w-full max-w-xs pb-1'>
-          <div className='flex items-center flex-wrap'>
+          <div className='flex items-center flex-wrap' onClick={e=>e.stopPropagation()}>
             <Link href={'/'+tweet.handle}>
               <h3 className='text-md font-semibold hover:underline mr-2'>{tweet.name}</h3>
             </Link>
