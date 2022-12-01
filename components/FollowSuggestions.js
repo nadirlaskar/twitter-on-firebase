@@ -17,7 +17,7 @@ const FollowSuggestions = () => {
         suggestions && suggestions.length > 0 && (
           suggestions.map((suggestion) => (
             <>
-              <div onClick={() => { 
+              <div key={suggestion.handle} onClick={() => { 
                 router.push(`/${suggestion.handle}`);
               }} className="flex p-2 border-b justify-between hover:bg-slate-100 hover:cursor-pointer">
                 <ShowUserInfo

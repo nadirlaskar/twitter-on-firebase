@@ -1,6 +1,7 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useMemo, useState } from "react";
 import Layout from "../../../components/Layout";
 import Tweet from "../../../components/Tweet";
 import Loading from "../../../components/ui-blocks/loading";
@@ -8,21 +9,45 @@ import useComponentWithFirebase from "../../../hooks/useComponentWithFirebase";
 import useTweet from "../../../hooks/useTweet";
 
 
-const TweetItem = ({tweetId, showComments=false, retweetBy}) => { 
-  const { tweet, likeTweet, retweet, comment, replies, loading } = useTweet(tweetId);
+const TweetItem = ({tweetId, showComments=false, retweetBy, isReply = false }) => { 
+  const { tweet, likeTweet, retweet, loading } = useTweet(tweetId);
   if (retweetBy && !tweet?.retweetedBy && tweet) {
     tweet.retweetedBy = { name: retweetBy }
   }
-  return (
-    <>
-      {tweet && <Tweet tweet={tweet} likeTweet={likeTweet} retweet={retweet} comment={comment} />}
-      {loading && <Loading className={'text-sky-400 w-4 h-4 p-4'} />}
-      {showComments && tweet?.replies?.map((reply) => {
+  const [showReplies, setShowReplies] = useState(!isReply);
+  const handleToggleComments = () => { 
+    if(isReply) setShowReplies((prev) => !prev);
+  }
+  const replies = useMemo(() => (
+    showReplies&&tweet?.replies?.map((reply) => {
         return (
-          <TweetItem tweetId={reply} showComments={false} />
+          <>
+            { showComments && (
+              <div className='text-sm pl-9 ml-9 h-14 border-l-2 flex items-center  text-slate-500'>
+                Replying to <span className='text-sky-400 ml-1'> @{tweet?.handle}</span>
+              </div>
+            )}
+            <TweetItem tweetId={reply} showComments={showReplies} isReply={true} />
+          </>
         )
-      })}
-    </>
+      })
+  ), [showReplies,showComments,tweet?.replies, tweet?.handle]);
+  return (
+    <div className="pl-2 border-dashed border-spacing-2 border-slate-200">
+      {tweet && (
+        <Tweet
+          tweet={tweet}
+          likeTweet={likeTweet}
+          retweet={retweet}
+          allowComment={!isReply}
+          onCommentClick={() => {
+             handleToggleComments();
+          }}
+        />
+      )}
+      {loading && <Loading className={'text-sky-400 w-4 h-4 p-4'} />}
+      {showComments&&replies}
+    </div>
   );
 }
 

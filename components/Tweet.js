@@ -35,7 +35,7 @@ const getReadableTime = (timestamp) => {
 };
 
 
-export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className }) => {
+export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className, allowComment = true, onCommentClick }) => {
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [isLikedByMe, setLike] = useState(tweet.isLikedByMe);
   useEffect(() => {
@@ -107,7 +107,8 @@ export const Tweet = ({ onClick, tweet, likeTweet, retweet, readonly, className 
                 disabled={!isLoggedIn}
                 onClick={(e) => { 
                   e.stopPropagation();
-                  setShowCommentModal(true);
+                  if (allowComment) setShowCommentModal(true);
+                  else if(onCommentClick) onCommentClick(tweet.id);
                 }}
                 className={classNames(
                 'disabled:text-slate-300 disabled:cursor-not-allowed disabled:pointer-events-none',
