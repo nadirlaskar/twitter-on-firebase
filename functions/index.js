@@ -128,6 +128,23 @@ const removeTweetsFromFollowersTimeline = async (uid, followingData) => {
   }
 };
 
+const addFollowNotification = async (uid, followingData) => {
+  const notificationRef = admin
+      .firestore()
+      .collection("notifications")
+      .doc(uid);
+  const notification = await notificationRef.get();
+  if (notification.exists) {
+    await notificationRef.update({
+      follows: admin.firestore.FieldValue.arrayUnion(followingData),
+    });
+  } else {
+    await notificationRef.set({
+      follows: admin.firestore.FieldValue.arrayUnion(followingData),
+    });
+  }
+};
+
 exports.followUser = functions.https.onCall(async (handle, context) => {
   const uid = context.auth.uid;
   const followerRef = admin.firestore().collection("users").doc(uid);
@@ -154,6 +171,8 @@ exports.followUser = functions.https.onCall(async (handle, context) => {
 
   // Add tweets to follower's timeline
   await addTweetsToFollowersTimeline(uid, followingData);
+  // add notification to following user
+  await addFollowNotification(followingData.id, follower.data());
 
   return {message: "User followed successfully"};
 });

@@ -1,3 +1,4 @@
+import { UserPlusIcon } from "@heroicons/react/24/solid";
 import { doc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useFirestoreDocData } from "reactfire";
@@ -30,11 +31,11 @@ const FollowsNotification = ({ follow }) => {
   const userIcon =  follow.photoUrl || fallback;
   return (
     <div className="flex flex-row py-2">
-      <UserPlusIco className='w-10 h-10 mr-2 text-pink-500' />
+      <UserPlusIcon className='w-10 h-10 mr-2 text-sky-400' />
       <div className="flex flex-col">
         <img src={userIcon} className='w-10 h-10 rounded-full mb-2'/>
         <span className="text-sm text-slate-400">
-          <span className="font-bold mr-1 text-slate-800">{follow?.name}</span> follows you.
+          <span className="font-bold mr-1 text-slate-800">{follow?.name}</span> followed you.
         </span>
       </div>
   </div>
@@ -57,7 +58,7 @@ const useNotifications = () =>{
         reference: like.tweet
       }))
       notificationsData.follows = notificationsData?.follows?.map(follow => ({
-        ...like,
+        ...follow,
         action: <FollowsNotification follow={follow} />,
       }))
       setNotifications(notificationsData);
