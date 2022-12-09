@@ -16,8 +16,10 @@ const useTweet = (tweetId) => {
     if (tweetId) {
       const db = getFirebaseInstance('firestore');
       setLoading(true);
-      return onSnapshot(doc(db, "tweets", tweetId), (docRef) => {
-        const tweetData = docRef.data();
+      const docRef = doc(db, "tweets", tweetId);
+      return onSnapshot(docRef, (docSnap) => {
+        const tweetData = docSnap.data();
+        console.debug(docRef.path, docSnap.metadata.fromCache ? ":  cached" : ":  server");
         setTweet({
           id: docRef.id,
           ...tweetData,
@@ -61,8 +63,6 @@ const useTweet = (tweetId) => {
       setError(err)
     })
   }, [setTweet]);
-
-  console.log(tweet)
 
   return { tweet, loading, error, likeTweet: likeTweetHandle, retweet: handleRetweet };
 

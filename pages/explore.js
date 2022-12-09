@@ -11,7 +11,6 @@ import useTweets from '../hooks/useTweets';
 export default function Explore() {
   const { tweets, loading, error, refresh, likeTweet, retweet } = useTweets('explore');
   const noTweets = tweets?.length === 0 && !loading;
-  console.log('Tweets', tweets);
   return (
     <Layout page={'explore'}>
       <Head>

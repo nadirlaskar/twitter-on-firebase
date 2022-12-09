@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
-import { connectFirestoreEmulator, enableIndexedDbPersistence, getFirestore } from "firebase/firestore";
+import { CACHE_SIZE_UNLIMITED, connectFirestoreEmulator, enableIndexedDbPersistence, initializeFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
@@ -10,8 +10,10 @@ import '../styles/global.css';
 
 const initializeFirebase = async  () => {
   const app = initializeApp(firebaseConfig);
-  const firestoreDb = getFirestore(app);
-  if (process.env.NODE_ENV !== 'production') {
+  const firestoreDb = initializeFirestore(app, {
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED
+  });
+  if (process.env.NODE_ENV !== 'development') {
     connectFirestoreEmulator(firestoreDb, 'localhost', 8080);
     connectAuthEmulator(getAuth(), 'http://localhost:9099');
     connectFunctionsEmulator(getFunctions(app), 'localhost', 5001);

@@ -55,7 +55,6 @@ const SearchInput = () => {
         }}
                 
         setQuery={(q) => {
-          console.log('setQuery', q)
           setSearch(q);
         }}
         inputProps={{

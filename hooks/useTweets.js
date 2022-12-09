@@ -53,34 +53,25 @@ const useTweets = (handle) => {
   const refresh = useCallback(() => {
     setLoading(true);
     setError(null);
+    const successFn = (tweets) => {
+      const tweetsData = tweets.data;
+      setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds - a.timestamp?._seconds));
+    };
+    const errorFn = (err) => {
+        setError(err);
+    }
+    const finallyFn = () => {
+      setLoading(false);
+    }
     if (handle === 'explore') { 
-      getExploreTweets().then((tweets) => {
-        const tweetsData = tweets.data;
-        setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds - a.timestamp?._seconds));
-      }).catch((err) => {
-        setError(err);
-      }).finally(() => {
-        setLoading(false);
-      });
+      getExploreTweets().then(successFn).catch(errorFn).finally(finallyFn);
+      getExploreTweets(true).then(successFn).catch(errorFn).finally(finallyFn);
     } else if (handle) {
-      getProfileTweets(handle).then((tweets) => {
-        const tweetsData = tweets.data;
-        setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds -  a.timestamp?._seconds));
-      }).catch((err) => {
-        setError(err);
-      }).finally(() => {
-        setLoading(false);
-      });
-    } else  {
-      return getHomeTweets().then((tweets) => {
-        let tweetsData = tweets.data;
-        setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds -  a.timestamp?._seconds));
-      }).catch((err) => {
-        setError(err);
-        console.error(err);
-      }).finally(() => {
-        setLoading(false);
-      });
+      getProfileTweets(handle).then(successFn).catch(errorFn).finally(finallyFn);
+      getProfileTweets(handle,true).then(successFn).catch(errorFn).finally(finallyFn);
+    } else {
+      getHomeTweets().then(successFn).catch(errorFn).finally(finallyFn);
+      getHomeTweets(true).then(successFn).catch(errorFn).finally(finallyFn);
     }
   }, [setLoading, setTweets, setError, handle, user]);
 

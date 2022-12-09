@@ -78,7 +78,6 @@ const Sidebar = ({ page }) => {
       <Modal title={<TweetTitle onClick={() => {setTweetModalOpen(false);}} />} isOpen={isTweetModalOpen} onClose={()=>setTweetModalOpen(false)}>
         <div className='flex flex-col justify-center items-start p-2 w-full'>
           <TweetInput onTweetSent={() => {
-            console.log('tweet sent');
             setTweetModalOpen(false);
           }} />
         </div>

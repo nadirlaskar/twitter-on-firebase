@@ -149,7 +149,6 @@ function Authenticate() {
         'text-white bg-sky-500 p-4 lg:rounded-full hover:bg-sky-600 text-lg w-full z-40'
         )}
         onClick={() => {
-          console.log('signing in');
           SignInWithGoogle().then((res) => { 
             if (res?._tokenResponse?.oauthAccessToken) {
               getProfileDataFromPeopleAPI(res._tokenResponse?.oauthAccessToken).then((res) => { 

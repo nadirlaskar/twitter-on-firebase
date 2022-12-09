@@ -49,13 +49,12 @@ export const TweetItem = ({className, tweetId, showReplies=false, retweetBy, sho
   const replies = useMemo(() => (
     showReplies&&tweet?.replies?.map((reply) => {
         return (
-          <>
-            <TweetItem
+          <TweetItem
+              key={reply}
               tweetId={reply}
               showReplies={false}
               isReply={true}
             />
-          </>
         )
       })
   ), [showReplies, tweet?.replies, tweet?.handle]);
