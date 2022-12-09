@@ -7,7 +7,6 @@ import Layout from "../../components/Layout";
 import ProfileHeader from "../../components/ProfileHeader";
 import { Tweet } from "../../components/Tweet";
 import Loading from "../../components/ui-blocks/loading";
-import useComponentWithFirebase from "../../hooks/useComponentWithFirebase";
 import useProfile from "../../hooks/useProfile";
 import useTweets from "../../hooks/useTweets";
 
@@ -60,6 +59,4 @@ export function Profile() {
   );
 }
 
-export default (props) => { 
-  return useComponentWithFirebase('auth', Profile, props)
-}
+export default Profile;

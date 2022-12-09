@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { useRef, useState } from "react";
-import useComponentWithFirebase from "../hooks/useComponentWithFirebase";
 import useProfile from "../hooks/useProfile";
 import { sendTweet } from "../libs/firebase.util";
 import Loading from "./ui-blocks/loading";
@@ -12,10 +11,9 @@ const TweetInput = ({ MAX=60, onTweetSent, replyTo = false}) => {
   const [sendingTweet, setSendingTweet] = useState(false);
   const initial = user?.name.split(' ').map((n) => n[0]).join('')
   const fallabckImage = `https://via.placeholder.com/80/OEA5E9/FFFFFF?text=${initial?.toUpperCase()}`;
-  console.log('Tweet ref', tweetref);
   return (
     <div className="p-2 w-full">
-      {status === 'loading' && <Loading className={classNames('w-10 text-sky-500')} />}
+      {status === 'loading' && <Loading className={classNames('w-5 h-5 text-sky-500')} />}
       {status === 'success' && user && (
         <div className="flex flex-row items-start">
           <img
@@ -97,7 +95,4 @@ const TweetInput = ({ MAX=60, onTweetSent, replyTo = false}) => {
 
 }
 
-export default (props = {}) => {
-  const withAuth = (innerProps) => useComponentWithFirebase('auth', TweetInput, innerProps);
-  return useComponentWithFirebase('firestore', withAuth, props);
-}
+export default TweetInput;

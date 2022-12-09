@@ -2,11 +2,11 @@ import { ArrowLeftOnRectangleIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import { httpsCallable } from 'firebase/functions';
 import router from 'next/router';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { useSigninCheck } from 'reactfire';
-import useComponentWithFirebase, { getFirebaseInstance } from '../hooks/useComponentWithFirebase';
+import { getFirebaseInstance } from '../hooks/useComponentWithFirebase';
 import useProfile from '../hooks/useProfile';
+import useSigninCheck from '../hooks/useSignInCheck';
 import getProfileDataFromPeopleAPI from '../libs/getProfileDataFromPeopleAPI';
 import LogoutUser from '../libs/logoutUser.js';
 import SignInWithGoogle from '../libs/signInWith';
@@ -83,10 +83,7 @@ const UserInfo = (props) => {
   )
 }
 
-export const ShowUserInfo = (props) => {
-  return useComponentWithFirebase('auth', UserInfo, props);
-}
-
+export const ShowUserInfo = UserInfo;
 export const UserInfoWithCoverPic = ({isEdit, profileHandle = 'me'}) => { 
   return (
     <>
@@ -168,12 +165,7 @@ function Authenticate() {
   }
 }
 
-export default memo(
-  function AuthenticateWithFirebase() {
-  const WithAuth = () => useComponentWithFirebase('auth', Authenticate, {});
-  return useComponentWithFirebase('functions', WithAuth, {});
-  }
-);
+export default Authenticate;
 
 const EditProfileTitle = ({onClose, onSave, isSaving}) => { 
   return (
@@ -290,6 +282,4 @@ function EditProfile({className, profileHandle}) {
   )
 }
 
-export const EditProfileButton = (props) => {
-  return useComponentWithFirebase('auth', EditProfile, props);
-};
+export const EditProfileButton = EditProfile;

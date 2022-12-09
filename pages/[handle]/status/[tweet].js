@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Layout from "../../../components/Layout";
 import { TweetItem } from "../../../components/Tweet";
-import useComponentWithFirebase from "../../../hooks/useComponentWithFirebase";
 
 const TweetThread = () => {
   const router = useRouter()
@@ -23,7 +22,4 @@ const TweetThread = () => {
   );
 }
 
-export default (props) => {
-  const WithAuth = (innerProps) => useComponentWithFirebase('auth', TweetThread, innerProps);
-  return useComponentWithFirebase('firestore', WithAuth, props);
-};
+export default TweetThread;

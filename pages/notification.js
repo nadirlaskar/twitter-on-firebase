@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Layout from "../components/Layout";
 import Loading from "../components/ui-blocks/loading";
-import useComponentWithFirebase from "../hooks/useComponentWithFirebase";
 import useNotifications from "../hooks/useNotifications";
 import useProfile from "../hooks/useProfile";
 
@@ -66,9 +65,9 @@ const NotificationList = () => {
           {notifications?.length === 0 && (
             <div className="text-slate-400 text-center w-full h-1/4 flex items-center justify-center">{`No ${activeTab} yet`}</div>
           )}
-          {notifications[activeTab]?.map((notification) => {
+          {notifications[activeTab]?.map((notification, index) => {
             return (
-              <div key={notification.handle} className={'flex items-start px-4 hover:bg-slate-100 justify-between border-b'}>
+              <div key={notification.handle + index} className={'flex items-start px-4 hover:bg-slate-100 justify-between border-b'}>
                 <div className={'flex items-start'}>
                     {notification.action}
                 </div>
@@ -81,7 +80,4 @@ const NotificationList = () => {
   );
 }
 
-export default (props) => {
-  const WithAuth = (innerProps) => useComponentWithFirebase('auth', NotificationList, innerProps);
-  return useComponentWithFirebase('firestore', WithAuth, props);
-};
+export default NotificationList;

@@ -1,5 +1,4 @@
 import router from "next/router";
-import useComponentWithFirebase from "../hooks/useComponentWithFirebase";
 import useFollowSuggestions from "../hooks/useFollowSuggestions";
 import { ShowUserInfo } from "./Authenticate";
 import { FollowButton } from "./ProfileHeader";
@@ -16,7 +15,6 @@ const FollowSuggestions = () => {
       {(
         suggestions && suggestions.length > 0 && (
           suggestions.map((suggestion) => (
-            <>
               <div key={suggestion.handle} onClick={() => { 
                 router.push(`/${suggestion.handle}`);
               }} className="flex p-2 border-b justify-between hover:bg-slate-100 hover:cursor-pointer">
@@ -30,14 +28,10 @@ const FollowSuggestions = () => {
                 />
                 <FollowButton profileHandle={suggestion?.handle} />
               </div>
-            </>
           )))
       )}
     </div>
   )
 
 }
-export default (props) => {
-  const WithAuth = (innerProps) => useComponentWithFirebase('auth', FollowSuggestions, innerProps);
-  return useComponentWithFirebase('firestore', WithAuth, props);
-};
+export default FollowSuggestions;

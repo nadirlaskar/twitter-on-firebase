@@ -1,9 +1,9 @@
-import { collection, endAt, getDocs, getFirestore, orderBy, query, startAt, where } from "firebase/firestore";
+import { collection, doc, endAt, getDoc, getDocs, orderBy, query, startAt, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { getFirebaseInstance } from "../hooks/useComponentWithFirebase";
 
 export const searchUserByHandleFromFirebase = async (myQ) => {
-  const db = getFirestore();
+  const db = getFirebaseInstance('firestore');
   const ref = collection(db, "users"); 
   const nameQ = query(ref, orderBy('handle'), startAt(myQ), endAt(myQ + '\uf8ff'));
   const handleQ = query(ref, orderBy('name'), startAt(myQ), endAt(myQ+'\uf8ff'));
@@ -51,7 +51,7 @@ export const unfollowUserFirebase = async (handle) => {
 
 export const loadUserProfiles = async (ids) => {
   // load user profiles from firestore
-  const db = getFirestore();
+  const db = getFirebaseInstance('firestore');
   const ref = collection(db, "users");
   const q = query(ref, where('id', 'in', ids));
   const qSnapshot = await getDocs(q);
@@ -72,12 +72,61 @@ export const sendTweet = async (tweet, replyTo = null) => {
   return result.data;
 }
 
+const fetchUserFromFireStoreById = async (db, uid) => {
+  const userRef = doc(db,"users",uid);
+  const user = await getDoc(userRef);
+  if (!user.exists) {
+    throw new Error("not-found", "User not found");
+  }
+  return {ref: userRef, data: user.data()};
+};
+
+const homeTweetsFromFirestore = async (db, context) => {
+  const uid = context.auth?.uid;
+  if (!uid) return [];
+  const userRef = doc(db, "users", uid);
+  const user = await getDoc(userRef)
+  if (!user.exists) { 
+    throw new Error("not-found", "User not found");
+  }
+  const notificationDoc = await getDoc(doc(db,"notifications", uid));
+  if (!notificationDoc.exists) {
+    throw new Error("not-found", "No tweets found");
+  }
+  const tweets = notificationDoc.data().tweets || [];
+
+  const source = notificationDoc.metadata.fromCache ? "local cache" : "server";
+  console.log("Data came from " + source);
+
+  const homeTweets = [];
+  await Promise.all(tweets.map(async (tweet) => {
+    let retweetedBy = null;
+    if (tweet.includes(":")) {
+      const [tweetId, retweetedByRef] = tweet.split(":");
+      tweet = tweetId;
+      retweetedBy = await fetchUserFromFireStoreById(db,retweetedByRef);
+    }
+    const tweetSnapshot = await getDoc(doc(db,"tweets",tweet))
+    const tweetData = tweetSnapshot.data();
+    if (retweetedBy) {
+      tweetData.retweetedBy = retweetedBy.data;
+      if (tweetData.retweetedBy.uid === uid) {
+        tweetData.retweetedBy.name = "you";
+      }
+    }
+    tweetData.isLikedByMe = tweetData.likes.includes(uid);
+    tweetData.isRetweetedByMe = tweetData.retweets.includes(uid);
+    homeTweets.push(tweetData);
+  }));
+  return homeTweets;
+}
+
 // call firebase function getHomeTweets
 export const getHomeTweets = async () => {
-  const functions = getFirebaseInstance('functions');
-  const getHomeTweets = httpsCallable(functions, 'getHomeTweets');
-  const result = await getHomeTweets();
-  return result;
+  const db = getFirebaseInstance('firestore');
+  const auth = getFirebaseInstance('auth');
+  const result = await homeTweetsFromFirestore(db, { auth: auth.currentUser });
+  return {data: result};
 }
 
 // call firebase function getHomeTweets

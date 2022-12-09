@@ -3,6 +3,14 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 admin.firestore().settings({ignoreUndefinedProperties: true});
 
+const checkIsloggedIn = (context) => {
+  if (!context.auth) {
+    throw new functions.https.
+        HttpsError("unauthenticated", "Please login");
+  }
+  return true;
+};
+
 const addUserToFireStore = (user) => {
   const handle = user.email.replace(/@.+/g, "");
   return admin.firestore()
@@ -228,6 +236,7 @@ const updateFollowersAboutTweet = async (user, tweetRef, isRetweet=false) => {
 };
 
 const sendTweetFn = async (data, context) => {
+  checkIsloggedIn(context);
   const uid = context.auth.uid;
   const userRef = admin.firestore().collection("users").doc(uid);
   const user = await userRef.get();
@@ -274,14 +283,6 @@ const sendTweetFn = async (data, context) => {
 
 exports.sendTweet = functions.https.onCall(sendTweetFn);
 
-const checkIsloggedIn = (context) => {
-  if (!context.auth) {
-    throw new functions.https.
-        HttpsError("unauthenticated", "Please login");
-  }
-  return true;
-};
-
 const fetchUserFromFireStoreById = async (uid) => {
   const userRef = admin.firestore().collection("users").doc(uid);
   const user = await userRef.get();
@@ -291,10 +292,9 @@ const fetchUserFromFireStoreById = async (uid) => {
   return {ref: userRef, data: user.data()};
 };
 
+// TODO: Add pagination to fetch tweets to show on home page
 exports.getHomeTweets = functions.https.onCall(async (_, context) => {
-  if (!checkIsloggedIn(context)) {
-    return [];
-  }
+  checkIsloggedIn(context);
   const uid = context.auth.uid;
   const userRef = admin.firestore().collection("users").doc(uid);
   const user = await userRef.get();

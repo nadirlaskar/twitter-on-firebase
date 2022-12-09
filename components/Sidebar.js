@@ -3,9 +3,8 @@ import { ArrowLeftIcon, BellIcon, HomeIcon, MagnifyingGlassIcon, UserCircleIcon 
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useSigninCheck } from 'reactfire';
 import Authenticate from '../components/Authenticate';
-import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
+import useSigninCheck from '../hooks/useSignInCheck';
 import TwitterHashtagIcon from './icons/HashtagIcon';
 import TweetInput from './TweetInput';
 import Modal from './ui-blocks/popup';
@@ -90,6 +89,4 @@ const Sidebar = ({ page }) => {
     </div>
   )
 }
-export default (props) => { 
-  return useComponentWithFirebase('auth', Sidebar, props)
-};
+export default Sidebar;

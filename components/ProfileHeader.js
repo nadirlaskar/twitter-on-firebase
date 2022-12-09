@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import router from 'next/router';
 import { EditProfileButton, ShowUserInfo, UserInfoWithCoverPic } from '../components/Authenticate';
-import useComponentWithFirebase from '../hooks/useComponentWithFirebase';
 import useFollowStatusFromFirestore from '../hooks/useFollowStatus';
 import useProfile from '../hooks/useProfile';
 import Loading from './ui-blocks/loading';
@@ -127,6 +126,4 @@ const ProfileHeader = ({ profileHandle, allowEdit = false, showFollowButton = fa
   )
 }
 
-export default (props) => {
-  return useComponentWithFirebase('firestore', ProfileHeader, props);
-}
+export default ProfileHeader;

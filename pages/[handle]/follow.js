@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import { FollowButton, ProfileTitle } from "../../components/ProfileHeader";
 import Loading from "../../components/ui-blocks/loading";
-import useComponentWithFirebase from "../../hooks/useComponentWithFirebase";
 import useProfile from "../../hooks/useProfile";
 import { loadUserProfiles } from "../../libs/firebase.util";
 
@@ -114,7 +113,4 @@ const FollowList = () => {
   );
 }
 
-export default (props) => {
-  const WithAuth = () => useComponentWithFirebase('auth', FollowList, props);
-  return useComponentWithFirebase('firestore', WithAuth, props);
-};
+export default FollowList;

@@ -1,7 +1,6 @@
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { doc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useFirestoreDocData } from "reactfire";
 import LikeIcon from "../components/icons/Like";
 import { getFirebaseInstance } from "./useComponentWithFirebase";
 
@@ -42,28 +41,35 @@ const FollowsNotification = ({ follow }) => {
   )
 }
 
-const useNotifications = () =>{
+const useNotifications = () => {
   const [notifications, setNotifications] = useState([]);
+  const [notificationsDataStatus, setNotificationsDataStatus] = useState('loading');
+  const [error, setError] = useState(null);
   const user = getFirebaseInstance('auth')?.currentUser;
-  const firestore = getFirebaseInstance('firestore');
-  const ref = doc(firestore, 'notifications', user?.uid || 'me');
-  const { status: notificationsDataStatus, data: notificationsData, error } = useFirestoreDocData(ref, {
-    idField: 'id',
-  });
   useEffect(() => {
-    if (notificationsDataStatus === 'success' && notificationsData) {
-      notificationsData.likes = notificationsData?.likes?.map(like => ({
-        ...like,
-        action: <LikeNotification like={like} />,
-        reference: like.tweet
-      }))
-      notificationsData.follows = notificationsData?.follows?.map(follow => ({
-        ...follow,
-        action: <FollowsNotification follow={follow} />,
-      }))
-      setNotifications(notificationsData);
+    if (user?.uid) {
+      const firestore = getFirebaseInstance('firestore');
+      const ref = doc(firestore, 'notifications', user?.uid || 'me');
+      getDoc(ref).then((doc) => {
+        const notificationsData = doc.data();
+        if(!notificationsData) return;
+        notificationsData.likes = notificationsData?.likes?.map(like => ({
+          ...like,
+          action: <LikeNotification like={like} />,
+          reference: like.tweet
+        }))
+        notificationsData.follows = notificationsData?.follows?.map(follow => ({
+          ...follow,
+          action: <FollowsNotification follow={follow} />,
+        }))
+        setNotifications(notificationsData);
+        setNotificationsDataStatus('success');
+      }).catch((error) => {
+        setError(error);
+        setNotificationsDataStatus('error');
+      });
     }
-  }, [notificationsDataStatus, notificationsData]);
+  }, [user.uid]);
   return [notificationsDataStatus, notifications, error];
 }
 

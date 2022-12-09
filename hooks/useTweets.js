@@ -77,6 +77,7 @@ const useTweets = (handle) => {
         setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds -  a.timestamp?._seconds));
       }).catch((err) => {
         setError(err);
+        console.error(err);
       }).finally(() => {
         setLoading(false);
       });
