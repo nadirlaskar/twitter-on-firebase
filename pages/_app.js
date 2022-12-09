@@ -13,7 +13,7 @@ const initializeFirebase = async  () => {
   const firestoreDb = initializeFirestore(app, {
     cacheSizeBytes: CACHE_SIZE_UNLIMITED
   });
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     connectFirestoreEmulator(firestoreDb, 'localhost', 8080);
     connectAuthEmulator(getAuth(), 'http://localhost:9099');
     connectFunctionsEmulator(getFunctions(app), 'localhost', 5001);
