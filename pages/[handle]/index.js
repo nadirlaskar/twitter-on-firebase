@@ -35,12 +35,12 @@ export function Profile() {
           <div className='hover:bg-slate-100 p-4 text-center text-sky-400 border-b border-t cursor-pointer' onClick={refresh}>
             {loading ? (<Loading className={'w-5 h-5 text-sky-500 !border-2'} />): "Load more tweets"}
           </div>
-          {tweets.map((tweet) => (
+          {tweets.map((tweet,index) => (
             <Tweet
               onClick={() => {
                 router.push(`/${tweet.handle}/status/${tweet.id}`);
               }}
-              key={tweet.id}
+              key={tweet.id+index}
               tweet={tweet}
               likeTweet={likeTweet}
               retweet={retweet}

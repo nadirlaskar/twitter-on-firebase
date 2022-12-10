@@ -3,9 +3,13 @@ import { httpsCallable } from "firebase/functions";
 import { getFirebaseInstance } from "../hooks/useComponentWithFirebase";
 
 export const getDocWithLog = async (ref, fromServer = false) => {
-  
-  let doc = await (fromServer ? getDocFromServer(ref) : getDocFromCache(ref));
-  if (!doc.exists()) { 
+  let doc = null;
+  try {
+    doc = await (fromServer ? getDocFromServer(ref) : getDocFromCache(ref));
+  }catch(err) {
+    console.error(err);
+  }
+  if (!doc?.exists()) { 
     doc = await getDoc(ref);
   }
   const source = doc.metadata.fromCache ? "cache" : "server";
@@ -114,7 +118,7 @@ const homeTweetsFromFirestore = async (db, context, fetchFromServer) => {
       tweet = tweetId;
       retweetedBy = await fetchUserFromFireStoreById(db,retweetedByRef);
     }
-    const tweetSnapshot = await getDocWithLog(doc(db,"tweets",tweet))
+    const tweetSnapshot = await getDocWithLog(doc(db,"tweets",tweet),fetchFromServer)
     const tweetData = tweetSnapshot.data();
     tweetData.id = tweetSnapshot.id;
     if (retweetedBy) {

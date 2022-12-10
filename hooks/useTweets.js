@@ -58,7 +58,8 @@ const useTweets = (handle) => {
       setTweets(tweetsData.sort((a, b) => b.timestamp?._seconds - a.timestamp?._seconds));
     };
     const errorFn = (err) => {
-        setError(err);
+      setError(err);
+      console.error(err);
     }
     const finallyFn = () => {
       setLoading(false);
