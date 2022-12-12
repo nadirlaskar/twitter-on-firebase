@@ -26,6 +26,9 @@ export default function App({ Component, pageProps }) {
   useEffect(() => {
     initializeFirebase().then(() => {
       setFirebaseInitialized(true);
+    }).catch((error) => {
+      console.error(error);
+      setFirebaseInitialized(true);
     });
   }, []);
   if (!firebaseInitialized) return <Loading className={'m-12 w-12 h-12'}/>;

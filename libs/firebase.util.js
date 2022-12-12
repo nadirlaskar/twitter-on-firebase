@@ -184,16 +184,18 @@ const getProfileTweetsFromFirestore = async (db, context, handle, fetchFromServe
     }
     const tweetSnapshot = await getDocWithLog(doc(db,"tweets",tweet), fetchFromServer);
     const tweetData = tweetSnapshot.data();
-    tweetData.id = tweetSnapshot.id;
-    if (retweetedBy) {
-      tweetData.retweetedBy = retweetedBy.data;
-      if (tweetData.retweetedBy.uid === uid) {
-        tweetData.retweetedBy.name = "you";
+    if(tweetData){
+      tweetData.id = tweetSnapshot.id;
+      if (retweetedBy) {
+        tweetData.retweetedBy = retweetedBy.data;
+        if (tweetData.retweetedBy.uid === uid) {
+          tweetData.retweetedBy.name = "you";
+        }
       }
+      tweetData.isLikedByMe = tweetData.likes.includes(uid);
+      tweetData.isRetweetedByMe = tweetData.retweets.includes(uid);
+      profileTweets.push(tweetData);
     }
-    tweetData.isLikedByMe = tweetData.likes.includes(uid);
-    tweetData.isRetweetedByMe = tweetData.retweets.includes(uid);
-    profileTweets.push(tweetData);
   }));
   return profileTweets;
 }
